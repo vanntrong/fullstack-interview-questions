@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Senior Fullstack (JavaScript) — Interview Prep · Vo Van Trong</title>
+<style>
+  :root{
+    --bg:#f7f8fb; --card:#ffffff; --ink:#1a2233; --muted:#5b6478;
+    --accent:#4f46e5; --accent-soft:#eef0ff; --border:#e4e7f0;
+    --green:#0f9d58; --amber:#b45309; --red:#c2410c;
+    --code-bg:#0f172a; --code-ink:#e2e8f0; --vn-bg:#f0fdf4; --vn-border:#bbf7d0;
+    --diag-box:#eef0ff; --diag-stroke:#4f46e5; --diag-box2:#fff7ed; --diag-stroke2:#ea580c;
+    --diag-box3:#ecfdf5; --diag-stroke3:#059669;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;counter-reset:qnum}
+  header.hero{background:linear-gradient(135deg,#312e81,#4f46e5 60%,#6366f1);color:#fff;padding:36px 24px 28px}
+  .wrap{max-width:960px;margin:0 auto;padding:0 8px}
+  header.hero h1{margin:0 0 6px;font-size:1.7rem}
+  header.hero p{margin:4px 0;opacity:.9;font-size:.95rem}
+  .meta-chips{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+  .meta-chips span{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:3px 10px;border-radius:999px;font-size:.78rem}
+
+  .controls{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 24px}
+  .controls .wrap{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  #search{flex:1;min-width:220px;padding:9px 14px;border:1px solid var(--border);border-radius:10px;font-size:.95rem;background:var(--card)}
+  #search:focus{outline:2px solid var(--accent);border-color:transparent}
+  .btn{padding:8px 14px;border:1px solid var(--border);background:var(--card);border-radius:10px;font-size:.85rem;cursor:pointer;color:var(--ink)}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  #count{font-size:.8rem;color:var(--muted);white-space:nowrap}
+
+  nav.toc{padding:14px 24px 0}
+  nav.toc .wrap{display:flex;flex-wrap:wrap;gap:8px}
+  nav.toc a{text-decoration:none;font-size:.8rem;padding:5px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid transparent}
+  nav.toc a:hover{border-color:var(--accent)}
+
+  main{padding:8px 24px 60px}
+  section{margin-top:34px}
+  section h2{font-size:1.25rem;border-left:4px solid var(--accent);padding-left:12px;margin-bottom:4px}
+  section .sec-desc{color:var(--muted);font-size:.88rem;margin:0 0 14px 16px}
+
+  details.q{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:10px 0;overflow:hidden}
+  details.q[open]{box-shadow:0 4px 18px rgba(30,41,99,.08);border-color:#c7cdf5}
+  details.q summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;gap:10px;align-items:baseline;font-weight:600;font-size:.97rem}
+  details.q summary::-webkit-details-marker{display:none}
+  details.q summary::before{counter-increment:qnum;content:counter(qnum);flex:none;background:var(--accent-soft);color:var(--accent);font-size:.75rem;font-weight:700;min-width:26px;height:26px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;transform:translateY(3px)}
+  details.q summary:hover{color:var(--accent)}
+  .badges{margin-left:auto;flex:none;display:flex;gap:6px}
+  .badge{font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
+  .b-senior{background:#fee2e2;color:#b91c1c}
+  .b-mid{background:#fef3c7;color:#92400e}
+  .b-diag{background:#dbeafe;color:#1d4ed8}
+  .answer{padding:2px 20px 16px 52px;border-top:1px dashed var(--border);font-size:.92rem}
+  .answer p{margin:10px 0}
+  .answer ul,.answer ol{margin:8px 0;padding-left:20px}
+  .answer li{margin:4px 0}
+  .answer strong{color:#111827}
+  .answer table{border-collapse:collapse;margin:10px 0;font-size:.85rem;width:100%}
+  .answer th,.answer td{border:1px solid var(--border);padding:6px 10px;text-align:left;vertical-align:top}
+  .answer th{background:var(--accent-soft)}
+  .answer code{background:#eef1f7;padding:1px 6px;border-radius:5px;font-size:.85em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .answer pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow-x:auto;font-size:.8rem;line-height:1.5}
+  .answer pre code{background:none;padding:0;color:inherit;font-size:1em}
+  .vn{background:var(--vn-bg);border:1px solid var(--vn-border);border-radius:10px;padding:10px 14px;font-size:.87rem;margin-top:12px}
+  .vn::before{content:"🇻🇳 Ghi nhớ: ";font-weight:700}
+  .fig{margin:14px 0;padding:14px;background:#fafbff;border:1px solid var(--border);border-radius:10px;overflow-x:auto}
+  .fig svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  .fig .cap{text-align:center;color:var(--muted);font-size:.78rem;margin-top:8px}
+
+  /* shared svg styles */
+  svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  svg .bx{fill:var(--diag-box);stroke:var(--diag-stroke);stroke-width:1.5;rx:8}
+  svg .bx2{fill:var(--diag-box2);stroke:var(--diag-stroke2);stroke-width:1.5}
+  svg .bx3{fill:var(--diag-box3);stroke:var(--diag-stroke3);stroke-width:1.5}
+  svg .bxg{fill:#f1f5f9;stroke:#94a3b8;stroke-width:1.2}
+  svg .t{font-size:12px;fill:#1a2233}
+  svg .tb{font-size:12px;font-weight:700;fill:#1a2233}
+  svg .ts{font-size:10px;fill:#5b6478}
+  svg .tw{font-size:12px;font-weight:700;fill:#fff}
+  svg .ar{stroke:#64748b;stroke-width:1.6;fill:none;marker-end:url(#arr)}
+  svg .ar2{stroke:var(--diag-stroke2);stroke-width:1.6;fill:none;marker-end:url(#arr2)}
+
+  footer{padding:26px 24px 40px;color:var(--muted);font-size:.8rem;text-align:center;border-top:1px solid var(--border)}
+  .hidden{display:none!important}
+  @media print{
+    .controls,nav.toc{display:none}
+    details.q{page-break-inside:avoid}
+  }
+  @media (max-width:640px){
+    .answer{padding-left:18px}
+    .badges{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Senior Fullstack Engineer (JavaScript) — Interview Question Bank</h1>
+    <p>Tailored to CV: <strong>Vo Van Trong</strong> — React / TypeScript / Node.js · charting & data-intensive apps · AI developer tooling · AWS</p>
+    <div class="meta-chips">
+      <span>JavaScript Core</span><span>TypeScript</span><span>Browser Core</span><span>React</span><span>Node.js Core</span><span>Database Core</span><span>System Design</span><span>AI / LLM</span><span>DevOps</span><span>CV Deep-dive</span>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="wrap">
+    <input id="search" type="search" placeholder="Search questions… (e.g. event loop, index, backpressure)">
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+    <span id="count"></span>
+  </div>
+</div>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#sec-js">1 · JavaScript Core</a>
+    <a href="#sec-ts">2 · TypeScript</a>
+    <a href="#sec-browser">3 · Browser Core</a>
+    <a href="#sec-react">4 · React</a>
+    <a href="#sec-node">5 · Node.js Core</a>
+    <a href="#sec-db">6 · Database Core</a>
+    <a href="#sec-design">7 · System Design</a>
+    <a href="#sec-ai">8 · AI / LLM Tooling</a>
+    <a href="#sec-devops">9 · DevOps &amp; CI/CD</a>
+    <a href="#sec-cv">10 · CV Deep-dive</a>
+  </div>
+</nav>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+    </marker>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/>
+    </marker>
+  </defs>
+</svg>
+
+<main class="wrap">
+<section id="sec-js">
+<h2>1 · JavaScript Core</h2>
+<p class="sec-desc">Language fundamentals every senior JS engineer must explain without hesitation.</p>
+
+<details class="q">
+<summary>Explain the JavaScript event loop. What is the difference between microtasks and macrotasks? What does this code log?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<pre><code>console.log('1');
+setTimeout(() => console.log('2'), 0);
+Promise.resolve().then(() => console.log('3'));
+queueMicrotask(() => console.log('4'));
+console.log('5');
+// Output: 1, 5, 3, 4, 2</code></pre>
+<p><strong>Model answer:</strong> JS is single-threaded. Sync code runs on the <strong>call stack</strong>. Async APIs (timers, fetch, DOM events) are handled by the host (browser/libuv) and their callbacks are queued. The <strong>event loop</strong> pulls callbacks in when the stack is empty, with a strict priority:</p>
+<ul>
+<li><strong>Microtasks</strong> (Promise callbacks, <code>queueMicrotask</code>, <code>MutationObserver</code>): the <em>entire</em> microtask queue is drained after every task, before rendering.</li>
+<li><strong>Macrotasks</strong> (setTimeout, setInterval, I/O, UI events): one per loop iteration.</li>
+</ul>
+<p>Senior follow-ups to expect: a microtask that queues another microtask can <strong>starve rendering</strong> (infinite microtask loop blocks paint); <code>setTimeout(fn, 0)</code> has a ~4ms clamp after nesting; <code>requestAnimationFrame</code> runs before paint, not in either queue.</p>
+<div class="fig">
+<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="20" y="30" width="150" height="120" rx="8"/>
+  <text class="tb" x="95" y="52" text-anchor="middle">Call Stack</text>
+  <rect class="bxg" x="40" y="65" width="110" height="22" rx="4"/><text class="ts" x="95" y="80" text-anchor="middle">fn()</text>
+  <rect class="bxg" x="40" y="92" width="110" height="22" rx="4"/><text class="ts" x="95" y="107" text-anchor="middle">main()</text>
+  <rect class="bx2" x="250" y="20" width="190" height="55" rx="8"/>
+  <text class="tb" x="345" y="42" text-anchor="middle">Web APIs / libuv</text>
+  <text class="ts" x="345" y="60" text-anchor="middle">timers · fetch · DOM events · fs</text>
+  <rect class="bx3" x="500" y="20" width="180" height="60" rx="8"/>
+  <text class="tb" x="590" y="42" text-anchor="middle">Microtask Queue</text>
+  <text class="ts" x="590" y="60" text-anchor="middle">.then / await / queueMicrotask</text>
+  <rect class="bxg" x="500" y="110" width="180" height="60" rx="8"/>
+  <text class="tb" x="590" y="132" text-anchor="middle">Macrotask Queue</text>
+  <text class="ts" x="590" y="150" text-anchor="middle">setTimeout · I/O · events</text>
+  <path class="ar" d="M172 60 H245"/><text class="ts" x="208" y="52" text-anchor="middle">async call</text>
+  <path class="ar" d="M442 40 H495"/><text class="ts" x="468" y="32" text-anchor="middle">done</text>
+  <path class="ar" d="M445 60 Q480 100 495 125"/>
+  <rect class="bx" x="250" y="185" width="190" height="50" rx="25"/>
+  <text class="tb" x="345" y="207" text-anchor="middle">Event Loop</text>
+  <text class="ts" x="345" y="223" text-anchor="middle">stack empty? → drain micro → 1 macro</text>
+  <path class="ar2" d="M500 145 Q430 175 445 195"/><text class="ts" x="470" y="180" text-anchor="middle">2nd</text>
+  <path class="ar2" d="M545 85 Q480 140 442 197"/><text class="ts" x="530" y="105" text-anchor="middle">1st (drain all)</text>
+  <path class="ar2" d="M248 205 Q150 200 95 155"/><text class="ts" x="150" y="185" text-anchor="middle">push callback</text>
+</svg>
+<div class="cap">Event loop: microtask queue is fully drained before the next macrotask (and before paint).</div>
+</div>
+<p class="vn">JS chạy 1 luồng. Ưu tiên: code đồng bộ → <strong>toàn bộ</strong> microtask (Promise) → 1 macrotask (setTimeout) → lặp lại. Microtask chạy hết trước khi render.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>What is a closure? Give practical use cases and one classic pitfall.<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> A closure is a function bundled with its lexical environment — it keeps access to variables of the scope where it was <em>defined</em>, even after that scope has returned.</p>
+<p>Practical uses: <strong>data privacy / module pattern</strong>, <strong>memoization &amp; caching</strong>, <strong>debounce/throttle</strong>, <strong>factory functions</strong>, React hooks (every render captures its own closure).</p>
+<pre><code>// Classic pitfall: var shares ONE binding across iterations
+for (var i = 0; i &lt; 3; i++) setTimeout(() =&gt; console.log(i)); // 3 3 3
+for (let i = 0; i &lt; 3; i++) setTimeout(() =&gt; console.log(i)); // 0 1 2 (let = new binding per iteration)</code></pre>
+<p>Senior angle: closures are a common source of <strong>memory leaks</strong> (long-lived callback capturing a large object) and of <strong>stale state in React</strong> (<code>useEffect</code> capturing an old value).</p>
+<p class="vn">Closure = hàm nhớ được scope nơi nó được tạo. Ứng dụng: debounce, memoize, private state. Bẫy: <code>var</code> trong vòng lặp, stale closure trong React.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Explain the prototype chain. How does <code>class</code> relate to prototypes?<span class="badges"><span class="badge b-mid">Mid+</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Every object has an internal <code>[[Prototype]]</code> link. Property lookup walks up this chain until found or <code>null</code>. <code>class</code> is syntax sugar: methods go on <code>ClassName.prototype</code>, <code>extends</code> wires two prototype links (instances chain AND static chain). <code>Object.create(proto)</code> creates an object with an explicit prototype.</p>
+<div class="fig">
+<svg viewBox="0 0 680 150" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="15" y="45" width="140" height="60" rx="8"/>
+  <text class="tb" x="85" y="70" text-anchor="middle">dog</text>
+  <text class="ts" x="85" y="88" text-anchor="middle">{ name: 'Rex' }</text>
+  <rect class="bx2" x="205" y="45" width="150" height="60" rx="8"/>
+  <text class="tb" x="280" y="70" text-anchor="middle">Dog.prototype</text>
+  <text class="ts" x="280" y="88" text-anchor="middle">bark()</text>
+  <rect class="bx3" x="405" y="45" width="160" height="60" rx="8"/>
+  <text class="tb" x="485" y="70" text-anchor="middle">Object.prototype</text>
+  <text class="ts" x="485" y="88" text-anchor="middle">toString() · hasOwnProperty()</text>
+  <text class="tb" x="632" y="80" text-anchor="middle">null</text>
+  <path class="ar" d="M157 75 H200"/><path class="ar" d="M357 75 H400"/><path class="ar" d="M567 75 H612"/>
+  <text class="ts" x="178" y="65" text-anchor="middle">__proto__</text>
+  <text class="ts" x="380" y="65" text-anchor="middle">__proto__</text>
+</svg>
+<div class="cap">Lookup of dog.bark(): not on dog → found on Dog.prototype. dog.toString(): two hops up.</div>
+</div>
+<p>Follow-ups: <code>__proto__</code> vs <code>prototype</code> (instance link vs. property of constructor functions); <code>instanceof</code> walks the chain; composition is often preferred over deep inheritance.</p>
+<p class="vn">Tra cứu property đi từ object → prototype → … → <code>null</code>. <code>class</code> chỉ là syntax sugar trên prototype. Phân biệt <code>__proto__</code> (link của instance) và <code>prototype</code> (property của constructor).</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How does <code>this</code> get bound? How do arrow functions differ?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> <code>this</code> is determined at <em>call time</em>, by 4 rules (highest priority first):</p>
+<ol>
+<li><strong><code>new</code></strong> → the newly created object.</li>
+<li><strong>Explicit</strong>: <code>call</code>/<code>apply</code>/<code>bind</code> → the given object (bind is permanent).</li>
+<li><strong>Implicit</strong>: <code>obj.method()</code> → the object before the dot.</li>
+<li><strong>Default</strong>: <code>undefined</code> in strict mode / ESM, <code>globalThis</code> otherwise.</li>
+</ol>
+<p><strong>Arrow functions have no own <code>this</code></strong> — they capture it lexically from the enclosing scope at definition time, and it cannot be rebound. That's why arrows are ideal for callbacks but wrong for object methods and cannot be constructors.</p>
+<pre><code>const obj = { x: 1, a: () =&gt; this.x, b() { return this.x } };
+obj.a(); // undefined (lexical this = module/global)
+obj.b(); // 1
+const f = obj.b; f(); // undefined — lost implicit binding</code></pre>
+<p class="vn">4 quy tắc: <code>new</code> &gt; <code>bind/call/apply</code> &gt; <code>obj.method()</code> &gt; mặc định. Arrow function không có <code>this</code> riêng — lấy từ scope bao ngoài, không rebind được.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Hoisting, the Temporal Dead Zone, and var vs let vs const.<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Declarations are processed before execution. <code>var</code> is hoisted and initialized to <code>undefined</code> (function-scoped). <code>let</code>/<code>const</code> are hoisted but <strong>uninitialized</strong> — accessing them before the declaration line throws a <code>ReferenceError</code>; that window is the <strong>TDZ</strong>. Function declarations hoist fully (body included); function expressions / arrows follow the variable's rule.</p>
+<pre><code>console.log(a); // undefined (var hoisted)
+console.log(b); // ReferenceError (TDZ)
+var a = 1; let b = 2;</code></pre>
+<p>Nuance worth mentioning: <code>const</code> means the <em>binding</em> is immutable, not the value — objects are still mutable (use <code>Object.freeze</code> or immutability discipline for that).</p>
+<p class="vn"><code>var</code> hoisted = <code>undefined</code>; <code>let/const</code> hoisted nhưng nằm trong TDZ → ReferenceError. <code>const</code> khoá biến, không khoá object bên trong.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Promises deep-dive: states, chaining, error handling, and Promise.all vs allSettled vs race vs any.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> A Promise is a state machine: <code>pending → fulfilled | rejected</code> (settled, immutable once settled). <code>.then</code> always returns a <em>new</em> promise; returning a value resolves it, throwing rejects it, returning a promise adopts its state — that's what enables chaining.</p>
+<table>
+<tr><th>Combinator</th><th>Resolves when</th><th>Rejects when</th><th>Use case</th></tr>
+<tr><td><code>Promise.all</code></td><td>all fulfill (array)</td><td><strong>first</strong> rejection</td><td>parallel calls, all required</td></tr>
+<tr><td><code>Promise.allSettled</code></td><td>always (status objects)</td><td>never</td><td>batch jobs; report each result</td></tr>
+<tr><td><code>Promise.race</code></td><td>first settles (either way)</td><td>first rejection if first</td><td>timeouts</td></tr>
+<tr><td><code>Promise.any</code></td><td>first fulfillment</td><td>all reject (AggregateError)</td><td>fastest healthy mirror</td></tr>
+</table>
+<p>Error handling: <code>.catch(f)</code> ≡ <code>.then(undefined, f)</code>; a catch <em>recovers</em> the chain. With <code>async/await</code>, use try/catch; remember <code>await</code> in a loop is sequential — collect promises then <code>Promise.all</code> for parallelism. Unhandled rejections crash Node (v15+) — always attach handlers.</p>
+<pre><code>// Parallel, not sequential:
+const [user, orders] = await Promise.all([getUser(id), getOrders(id)]);</code></pre>
+<p class="vn">Promise là state machine 3 trạng thái. <code>all</code> fail nhanh, <code>allSettled</code> không bao giờ reject, <code>race</code> lấy cái xong đầu tiên, <code>any</code> lấy cái thành công đầu tiên. Await trong loop = tuần tự.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>ES Modules vs CommonJS — key differences, and how does Node.js handle both?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong></p>
+<ul>
+<li><strong>CJS</strong> (<code>require</code>/<code>module.exports</code>): synchronous, dynamic (can require conditionally at runtime), exports a <em>copied value snapshot</em> of the object, loaded on demand.</li>
+<li><strong>ESM</strong> (<code>import</code>/<code>export</code>): static — parsed before execution, enabling <strong>tree-shaking</strong> and top-level <code>await</code>; exports are <strong>live read-only bindings</strong>; async loading; strict mode by default.</li>
+</ul>
+<p>Node decides by <code>"type": "module"</code> in package.json or extensions (<code>.mjs</code>/<code>.cjs</code>). Interop rules: ESM can <code>import</code> CJS (default export = <code>module.exports</code>); CJS <strong>cannot</strong> <code>require()</code> ESM (must use dynamic <code>import()</code>) — though Node 22+ allows <code>require(esm)</code> when the module has no top-level await. Dual packages use the <code>"exports"</code> field with <code>import</code>/<code>require</code> conditions — relevant when publishing an SDK.</p>
+<p>Circular deps behave differently: CJS returns a partially-filled exports object; ESM's live bindings usually resolve later reads correctly but can hit TDZ errors.</p>
+<p class="vn">CJS: sync, giá trị copy, dynamic. ESM: static → tree-shaking, live binding, có top-level await. Publish SDK nên khai báo <code>"exports"</code> với cả 2 condition <code>import</code>/<code>require</code>.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How does garbage collection work in V8? Name common memory-leak sources in JS apps.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> V8 uses <strong>generational, tracing GC</strong> (reachability from roots — not reference counting). The heap is split into a small <strong>new space</strong> (young objects, fast Scavenge/copying collector) and <strong>old space</strong> (survivors get promoted; collected by Mark–Sweep–Compact, largely incremental/concurrent — Orinoco — to shorten pauses).</p>
+<p>Common leak sources:</p>
+<ul>
+<li>Unremoved <strong>event listeners</strong> / subscriptions (esp. on long-lived emitters).</li>
+<li><strong>Closures</strong> capturing large structures inside long-lived callbacks/caches.</li>
+<li>Ever-growing <strong>Maps/arrays used as caches</strong> without eviction → use <code>WeakMap</code>/<code>WeakRef</code> or LRU with TTL.</li>
+<li>Detached DOM nodes still referenced from JS.</li>
+<li>Forgotten <strong>timers</strong> (<code>setInterval</code>) and unfinished promises holding scopes.</li>
+</ul>
+<p>Detection: Chrome DevTools heap snapshots (compare 3 snapshots, look at retained size / detached nodes), <code>process.memoryUsage()</code>, <code>--inspect</code> for Node.</p>
+<p class="vn">V8: GC theo reachability, 2 thế hệ (new space Scavenge, old space Mark-Sweep-Compact). Leak phổ biến: listener không remove, cache Map không giới hạn, closure giữ object lớn, detached DOM, setInterval quên clear.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Shallow vs deep copy. Compare spread, JSON round-trip, and structuredClone.<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Shallow copy (<code>{...obj}</code>, <code>Object.assign</code>, <code>arr.slice()</code>) copies one level — nested objects are shared references. Deep copy options:</p>
+<ul>
+<li><code>JSON.parse(JSON.stringify(x))</code> — loses <code>Date</code> (→ string), <code>Map/Set</code>, <code>undefined</code>, functions; throws on circular refs and BigInt. Legacy trick only.</li>
+<li><code>structuredClone(x)</code> — the modern standard: handles Date, Map, Set, ArrayBuffer, circular references. Cannot clone functions, DOM nodes, class methods (prototype is lost).</li>
+<li>Library (lodash <code>cloneDeep</code>) or hand-rolled for special class instances.</li>
+</ul>
+<p>Senior angle: in React/Redux you rarely deep-copy — you do <strong>structural sharing</strong> (copy only the changed path) for performance; Immer automates it.</p>
+<p class="vn">Spread chỉ copy 1 tầng. <code>structuredClone</code> là chuẩn hiện đại (xử lý được Date/Map/Set/circular), nhưng không clone function/prototype. Trong React ưu tiên structural sharing thay vì deep copy.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Explain debounce vs throttle. Implement debounce from scratch.<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Both limit call frequency. <strong>Debounce</strong> waits until events <em>stop</em> for N ms (search-as-you-type, resize end, autosave). <strong>Throttle</strong> guarantees at most one call every N ms <em>while</em> events continue (scroll position, mousemove, chart pan — relevant for charting UIs).</p>
+<pre><code>function debounce(fn, ms) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() =&gt; fn.apply(this, args), ms);
+  };
+}</code></pre>
+<p>Follow-ups: leading/trailing options; cancel method; why <code>this</code> and args forwarding matter; in React wrap in <code>useMemo</code>/<code>useRef</code> so the timer survives re-renders.</p>
+<p class="vn">Debounce: chờ ngừng thao tác mới chạy (search input). Throttle: chạy đều mỗi N ms khi thao tác liên tục (scroll, pan chart). Trong React phải giữ qua <code>useRef/useMemo</code>.</p>
+</div>
+</details>
+</section>
+<section id="sec-ts">
+<h2>2 · TypeScript</h2>
+<p class="sec-desc">Expect deep questions — the CV highlights a 14K-line JS→TS migration and a TypeScript SDK.</p>
+
+<details class="q">
+<summary><code>type</code> vs <code>interface</code> — differences and when to use each?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Mostly interchangeable for object shapes. Key differences:</p>
+<ul>
+<li><strong>interface</strong>: supports <strong>declaration merging</strong> (two declarations merge — essential for augmenting libs, e.g. extending <code>Express.Request</code>), <code>extends</code> reads slightly better, errors are often clearer.</li>
+<li><strong>type</strong>: can express <strong>unions, intersections, tuples, mapped &amp; conditional types</strong>, primitives aliases — things interfaces can't.</li>
+</ul>
+<p>Practical rule: public API object shapes → <code>interface</code> (extendable/mergeable, good for SDKs); everything else (unions, utilities, function types) → <code>type</code>. Consistency in the codebase matters more than the choice.</p>
+<p class="vn">Interface: merge được, dùng cho public API/SDK. Type: mạnh hơn (union, conditional, mapped). Quy ước nhất quán trong codebase quan trọng hơn.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Generics with constraints, conditional types, and <code>infer</code> — walk through examples.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<pre><code>// Constraint: T must have an id
+function byId&lt;T extends { id: string }&gt;(items: T[], id: string): T | undefined {
+  return items.find(i =&gt; i.id === id);
+}
+
+// Conditional type + infer: unwrap a Promise
+type Awaited2&lt;T&gt; = T extends Promise&lt;infer U&gt; ? Awaited2&lt;U&gt; : T;
+
+// Mapped type: make all fields optional readonly strings
+type Form&lt;T&gt; = { readonly [K in keyof T]?: string };
+
+// Template literal + key remapping
+type Getters&lt;T&gt; = { [K in keyof T as `get${Capitalize&lt;string &amp; K&gt;}`]: () =&gt; T[K] };</code></pre>
+<p><strong>Model answer:</strong> Generics parameterize types; <code>extends</code> constrains what callers can pass while keeping inference. Conditional types (<code>A extends B ? X : Y</code>) branch on types and <strong>distribute over unions</strong>; <code>infer</code> captures a type inside a pattern (this is how <code>ReturnType</code>, <code>Parameters</code>, <code>Awaited</code> are built). Senior signal: knowing when to <em>stop</em> — overly clever types hurt compile time and readability; prefer simple generics at API boundaries.</p>
+<p class="vn">Generic + <code>extends</code> = ràng buộc mà vẫn giữ inference. Conditional type phân phối trên union; <code>infer</code> để "bắt" type con. Biết dừng đúng lúc — type quá phức tạp làm chậm compile, khó đọc.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Type narrowing: type guards, discriminated unions, <code>unknown</code> vs <code>any</code>, and <code>never</code>.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Narrowing = the compiler refining a union inside control flow via <code>typeof</code>, <code>instanceof</code>, <code>in</code>, equality checks, or custom guards (<code>x is T</code> predicates).</p>
+<pre><code>type Event =
+  | { type: 'click'; x: number; y: number }
+  | { type: 'key';   code: string };
+
+function handle(e: Event) {
+  switch (e.type) {           // discriminant
+    case 'click': return e.x; // narrowed to click
+    case 'key':   return e.code;
+    default: { const _exhaustive: never = e; return _exhaustive; } // compile error if a variant is added
+  }
+}</code></pre>
+<ul>
+<li><strong>Discriminated unions</strong> (shared literal tag) are the idiomatic way to model states — e.g. <code>{status:'loading'} | {status:'success', data} | {status:'error', error}</code> makes impossible states unrepresentable.</li>
+<li><strong><code>unknown</code></strong> = type-safe <code>any</code>: you must narrow before use. Use for API responses/catch clauses. <code>any</code> disables checking and is contagious.</li>
+<li><strong><code>never</code></strong> = unreachable; used for exhaustiveness checks (above) — a compile-time safety net when new variants appear.</li>
+</ul>
+<p class="vn">Discriminated union + switch + <code>never</code> exhaustive check = mô hình state chuẩn. <code>unknown</code> buộc phải narrow trước khi dùng (an toàn), <code>any</code> tắt hẳn type-check (tránh).</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Which utility types do you use most, and how are they implemented?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> <code>Partial</code>, <code>Required</code>, <code>Pick</code>, <code>Omit</code>, <code>Record</code>, <code>Readonly</code>, <code>ReturnType</code>, <code>Parameters</code>, <code>Awaited</code>, <code>NonNullable</code>, <code>Extract/Exclude</code>. Being able to write them shows real understanding:</p>
+<pre><code>type Partial&lt;T&gt;  = { [K in keyof T]?: T[K] };
+type Pick&lt;T, K extends keyof T&gt; = { [P in K]: T[P] };
+type Omit&lt;T, K&gt; = Pick&lt;T, Exclude&lt;keyof T, K&gt;&gt;;
+type Record&lt;K extends PropertyKey, V&gt; = { [P in K]: V };
+type ReturnType&lt;T&gt; = T extends (...a: any) =&gt; infer R ? R : never;</code></pre>
+<p>Typical patterns: <code>Omit&lt;Props,'onChange'&gt;</code> when wrapping components, <code>Record&lt;ProductId, ChartConfig&gt;</code> for config maps, <code>Partial&lt;Options&gt;</code> + defaults for SDK options objects.</p>
+<p class="vn">Nắm cách tự viết Partial/Pick/Omit/ReturnType bằng mapped + conditional type. Pattern SDK: <code>Partial&lt;Options&gt;</code> merge với defaults.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>You migrated a 14K-line legacy JS codebase to TypeScript. Walk me through your strategy.<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Expected talking points (this is YOUR story — structure it like this):</strong></p>
+<ol>
+<li><strong>Incremental, never big-bang:</strong> enable <code>allowJs</code> + <code>checkJs</code>, migrate file-by-file (<code>.js → .ts</code>), start from leaf modules / shared utils up to entry points; keep the app shippable at every commit.</li>
+<li><strong>Strictness ratchet:</strong> start with loose config, then progressively enable <code>noImplicitAny</code>, <code>strictNullChecks</code>, <code>strict</code>. Forbid new <code>any</code> via ESLint (<code>no-explicit-any</code>) while tolerating legacy ones tagged <code>// TODO(ts)</code>.</li>
+<li><strong>Types at the boundaries first:</strong> external API responses, ChartIQ's untyped surface (write <code>.d.ts</code> declarations), event payloads. Boundary types catch the most real bugs.</li>
+<li><strong>Safety net:</strong> tests + visual regression (Storybook/Playwright screenshots) to prove rendering unchanged; migration revealed latent defects (undefined access, wrong argument shapes) — quantify bugs found.</li>
+<li><strong>Tooling &amp; team:</strong> codemods (ts-migrate) for mechanical parts, CI gate on type errors, migration dashboard (% files typed) to keep momentum.</li>
+</ol>
+<p>Mention outcomes: ~14K lines retired, rendering defects fixed because the compiler surfaced dead/contradictory code paths.</p>
+<p class="vn">Kể theo khung: incremental từng file → siết strict dần → type boundary trước (API, ChartIQ d.ts) → lưới an toàn bằng test/visual regression → codemod + CI gate. Nêu số liệu: 14K dòng, bug rendering phát hiện nhờ compiler.</p>
+</div>
+</details>
+</section>
+<section id="sec-browser">
+<h2>3 · Core Web Browser</h2>
+<p class="sec-desc">How the browser actually works — networking, rendering, storage, security.</p>
+
+<details class="q">
+<summary>What happens when you type a URL and press Enter? (end to end)<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer — walk the layers:</strong></p>
+<ol>
+<li><strong>URL parsing</strong> &amp; HSTS check; browser cache lookup.</li>
+<li><strong>DNS resolution</strong>: browser cache → OS cache → resolver → recursive lookup (root → TLD → authoritative). Result cached by TTL.</li>
+<li><strong>TCP handshake</strong> (SYN → SYN-ACK → ACK), then <strong>TLS handshake</strong> (cert validation, key exchange; TLS 1.3 = 1-RTT, HTTP/3/QUIC merges transport+TLS over UDP).</li>
+<li><strong>HTTP request/response</strong>: headers, compression (br/gzip), possibly 301/302 redirects, CDN edge may answer (cache HIT).</li>
+<li><strong>Rendering</strong>: HTML parsed to DOM (streaming), CSS → CSSOM, JS may block parsing, then render tree → layout → paint → composite (next question).</li>
+<li>Subresources fetched (preload scanner runs ahead), page becomes interactive.</li>
+</ol>
+<div class="fig">
+<svg viewBox="0 0 720 120" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="10" y="35" width="90" height="50" rx="8"/><text class="tb" x="55" y="57" text-anchor="middle">URL +</text><text class="ts" x="55" y="73" text-anchor="middle">cache check</text>
+  <rect class="bx2" x="130" y="35" width="90" height="50" rx="8"/><text class="tb" x="175" y="57" text-anchor="middle">DNS</text><text class="ts" x="175" y="73" text-anchor="middle">→ IP addr</text>
+  <rect class="bx2" x="250" y="35" width="100" height="50" rx="8"/><text class="tb" x="300" y="57" text-anchor="middle">TCP + TLS</text><text class="ts" x="300" y="73" text-anchor="middle">handshake</text>
+  <rect class="bx3" x="380" y="35" width="100" height="50" rx="8"/><text class="tb" x="430" y="57" text-anchor="middle">HTTP</text><text class="ts" x="430" y="73" text-anchor="middle">req / res (CDN?)</text>
+  <rect class="bx" x="510" y="35" width="90" height="50" rx="8"/><text class="tb" x="555" y="57" text-anchor="middle">Parse</text><text class="ts" x="555" y="73" text-anchor="middle">DOM/CSSOM</text>
+  <rect class="bx" x="625" y="35" width="85" height="50" rx="8"/><text class="tb" x="667" y="57" text-anchor="middle">Render</text><text class="ts" x="667" y="73" text-anchor="middle">pixels</text>
+  <path class="ar" d="M102 60 H126"/><path class="ar" d="M222 60 H246"/><path class="ar" d="M352 60 H376"/><path class="ar" d="M482 60 H506"/><path class="ar" d="M602 60 H621"/>
+</svg>
+<div class="cap">URL → DNS → TCP/TLS → HTTP → parse → render. Mention caching layers at every step to stand out.</div>
+</div>
+<p>Senior signal: mention what can be <em>optimized</em> at each hop — DNS prefetch, preconnect, TLS 1.3/QUIC, CDN, cache headers, streaming HTML.</p>
+<p class="vn">Trình tự: parse URL → DNS (nhiều tầng cache) → TCP/TLS → HTTP (CDN có thể trả cache) → DOM/CSSOM → render. Điểm cộng: nói cách tối ưu ở từng bước (preconnect, QUIC, CDN…).</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Explain the Critical Rendering Path. Which resources block rendering, and what do async/defer do?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<div class="fig">
+<svg viewBox="0 0 720 190" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="15" y="20" width="110" height="44" rx="8"/><text class="tb" x="70" y="46" text-anchor="middle">HTML → DOM</text>
+  <rect class="bx2" x="15" y="110" width="110" height="44" rx="8"/><text class="tb" x="70" y="136" text-anchor="middle">CSS → CSSOM</text>
+  <rect class="bx3" x="195" y="65" width="115" height="44" rx="8"/><text class="tb" x="252" y="85" text-anchor="middle">Render Tree</text><text class="ts" x="252" y="100" text-anchor="middle">visible nodes + styles</text>
+  <rect class="bx" x="360" y="65" width="90" height="44" rx="8"/><text class="tb" x="405" y="85" text-anchor="middle">Layout</text><text class="ts" x="405" y="100" text-anchor="middle">geometry</text>
+  <rect class="bx" x="490" y="65" width="90" height="44" rx="8"/><text class="tb" x="535" y="85" text-anchor="middle">Paint</text><text class="ts" x="535" y="100" text-anchor="middle">rasterize layers</text>
+  <rect class="bx" x="615" y="65" width="95" height="44" rx="8"/><text class="tb" x="662" y="85" text-anchor="middle">Composite</text><text class="ts" x="662" y="100" text-anchor="middle">GPU</text>
+  <path class="ar" d="M127 42 Q170 50 192 75"/>
+  <path class="ar" d="M127 132 Q170 122 192 99"/>
+  <path class="ar" d="M312 87 H355"/><path class="ar" d="M452 87 H485"/><path class="ar" d="M582 87 H610"/>
+  <rect class="bxg" x="195" y="145" width="255" height="34" rx="8"/>
+  <text class="ts" x="322" y="166" text-anchor="middle">JS execution waits for CSSOM; sync &lt;script&gt; blocks HTML parser</text>
+  <path class="ar2" d="M250 143 Q220 130 210 111"/>
+</svg>
+<div class="cap">CRP: DOM + CSSOM → render tree → layout → paint → composite.</div>
+</div>
+<p><strong>Model answer:</strong> The browser can't paint until it has DOM + CSSOM. <strong>CSS is render-blocking</strong> (all of it, unless <code>media</code>-scoped). <strong>Sync JS is parser-blocking</strong>, and it also waits for CSSOM (it might read styles). Optimizations:</p>
+<ul>
+<li><code>&lt;script defer&gt;</code>: download in parallel, execute in order after parsing, before <code>DOMContentLoaded</code> — the default choice.</li>
+<li><code>&lt;script async&gt;</code>: execute as soon as downloaded, order not guaranteed — for independent scripts (analytics).</li>
+<li>Inline critical CSS, preload key assets, minimize CSS, code-split JS, avoid <code>@import</code>.</li>
+</ul>
+<p class="vn">CSS chặn render, JS sync chặn parse (và chờ CSSOM). <code>defer</code> = tải song song, chạy đúng thứ tự sau khi parse xong (mặc định nên dùng); <code>async</code> = chạy ngay khi tải xong, không đảm bảo thứ tự.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Reflow (layout) vs repaint vs composite — and how do you minimize them in a chart-heavy UI?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Changing geometry (width, top, font-size, DOM insertion) triggers <strong>reflow</strong> → repaint → composite (most expensive). Changing visuals only (color, background, shadow) triggers <strong>repaint</strong> → composite. Changing <code>transform</code>/<code>opacity</code> on a promoted layer is <strong>composite-only</strong> — GPU, cheapest, off the main thread.</p>
+<ul>
+<li>Avoid <strong>layout thrashing</strong>: interleaved reads (<code>offsetHeight</code>) and writes force synchronous reflow. Batch: read all, then write all (or use <code>requestAnimationFrame</code>).</li>
+<li>Animate only <code>transform</code>/<code>opacity</code>; promote sparingly with <code>will-change</code> (layers cost memory).</li>
+<li>Chart-heavy UIs: prefer <strong>canvas</strong> (one element, no per-point DOM), batch draws per rAF tick, use <code>contain: layout paint</code> to isolate widgets, virtualize anything DOM-based.</li>
+</ul>
+<pre><code>// Thrash (bad): read-write-read-write in a loop
+els.forEach(el =&gt; { el.style.width = el.offsetWidth + 10 + 'px'; });
+// Fix: read phase, then write phase
+const w = els.map(el =&gt; el.offsetWidth);
+els.forEach((el, i) =&gt; { el.style.width = w[i] + 10 + 'px'; });</code></pre>
+<p class="vn">Reflow (đổi geometry) &gt; repaint (đổi màu) &gt; composite (transform/opacity, rẻ nhất). Tránh đọc–ghi xen kẽ layout. Chart nhiều điểm dữ liệu → canvas + gom vẽ theo rAF.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Event propagation: capturing, target, bubbling. What is event delegation and why use it?<span class="badges"><span class="badge b-mid">Mid+</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<div class="fig">
+<svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bxg" x="230" y="15" width="160" height="34" rx="8"/><text class="tb" x="310" y="37" text-anchor="middle">document</text>
+  <rect class="bxg" x="230" y="75" width="160" height="34" rx="8"/><text class="tb" x="310" y="97" text-anchor="middle">&lt;ul id="list"&gt;</text>
+  <rect class="bx" x="230" y="135" width="160" height="34" rx="8"/><text class="tb" x="310" y="157" text-anchor="middle">&lt;li&gt; (target)</text>
+  <path class="ar2" d="M215 30 Q160 90 215 150"/><text class="ts" x="130" y="95" text-anchor="middle">1. capturing ↓</text>
+  <path class="ar" d="M405 150 Q460 90 405 30"/><text class="ts" x="495" y="95" text-anchor="middle">3. bubbling ↑</text>
+  <text class="ts" x="310" y="188" text-anchor="middle">2. target phase</text>
+</svg>
+<div class="cap">Events travel down (capture), hit the target, then bubble up — delegation listens once at the ancestor.</div>
+</div>
+<p><strong>Model answer:</strong> An event travels document → target (<strong>capturing</strong>, opt-in via <code>{capture:true}</code>), fires at the <strong>target</strong>, then <strong>bubbles</strong> back up (default listener phase). <code>stopPropagation()</code> halts the walk; <code>preventDefault()</code> cancels default behavior only.</p>
+<p><strong>Delegation</strong>: one listener on an ancestor handles events from many children via <code>event.target.closest('li')</code>. Benefits: works for dynamically added rows, one listener instead of thousands (memory), simpler cleanup. This is how React ≤16 worked (events at document) and React 17+ (at root container).</p>
+<p>Gotchas: some events don't bubble (<code>focus</code>, <code>blur</code>, <code>mouseenter</code> — use <code>focusin/focusout</code>, <code>mouseover</code>); <code>event.target</code> vs <code>event.currentTarget</code>.</p>
+<p class="vn">3 pha: capture ↓ → target → bubble ↑. Delegation: 1 listener ở cha xử lý ngàn con (dùng <code>closest()</code>), hoạt động với element thêm động. Lưu ý focus/blur không bubble.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Compare cookie, localStorage, sessionStorage, and IndexedDB. Where would you store a JWT?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<table>
+<tr><th></th><th>Cookie</th><th>localStorage</th><th>sessionStorage</th><th>IndexedDB</th></tr>
+<tr><td>Size</td><td>~4 KB</td><td>~5–10 MB</td><td>~5 MB</td><td>GBs (quota)</td></tr>
+<tr><td>Sent to server</td><td><strong>Every request</strong></td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>Lifetime</td><td>Expires/Max-Age</td><td>Persistent</td><td>Tab session</td><td>Persistent</td></tr>
+<tr><td>API</td><td>Sync (document.cookie)</td><td>Sync (blocks main thread)</td><td>Sync</td><td><strong>Async</strong>, transactional, indexed</td></tr>
+<tr><td>Workers access</td><td>No</td><td>No</td><td>No</td><td><strong>Yes</strong></td></tr>
+</table>
+<p><strong>JWT storage:</strong> localStorage is readable by any JS → one XSS steals the token. Best practice: access token in <strong>memory</strong> (short-lived) + refresh token in an <strong><code>HttpOnly; Secure; SameSite</code> cookie</strong> (JS can't read it; SameSite + CSRF token mitigates CSRF). IndexedDB is for large structured data: offline caches, chart history buffers — and it's the only one usable from workers.</p>
+<p class="vn">Cookie gửi kèm mọi request (4KB); local/sessionStorage là sync API; IndexedDB async, dung lượng lớn, dùng được trong worker. JWT: access token để trong memory, refresh token trong cookie <code>HttpOnly</code> — không để localStorage.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Explain CORS. When does a preflight request happen, and how do credentials work?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> The <strong>Same-Origin Policy</strong> blocks JS from <em>reading</em> cross-origin responses (origin = scheme + host + port). CORS is the server's way to opt in, via response headers checked by the <em>browser</em> (curl/servers are unaffected — CORS protects users, not APIs).</p>
+<ul>
+<li><strong>Simple requests</strong> (GET/POST/HEAD with safe headers, form content types): sent directly; browser checks <code>Access-Control-Allow-Origin</code> on the response.</li>
+<li><strong>Preflighted</strong>: anything else (e.g. <code>Content-Type: application/json</code>, <code>Authorization</code> header, PUT/DELETE) → browser first sends <code>OPTIONS</code> with <code>Access-Control-Request-Method/Headers</code>; server must answer with allowed origin/methods/headers (+ <code>Access-Control-Max-Age</code> to cache the result).</li>
+<li><strong>Credentials</strong> (cookies): need <code>credentials:'include'</code> on fetch AND <code>Access-Control-Allow-Credentials: true</code>, and the allowed origin must be explicit — <strong>not <code>*</code></strong>.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 660 170" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="20" y="20" width="130" height="40" rx="8"/><text class="tb" x="85" y="45" text-anchor="middle">Browser (app.com)</text>
+  <rect class="bx3" x="510" y="20" width="130" height="40" rx="8"/><text class="tb" x="575" y="45" text-anchor="middle">API (api.com)</text>
+  <path class="ar" d="M155 45 H505"/><text class="ts" x="330" y="38" text-anchor="middle">1. OPTIONS (preflight): Origin, Request-Method, Request-Headers</text>
+  <path class="ar" d="M505 85 H155"/><text class="ts" x="330" y="78" text-anchor="middle">2. 204: Allow-Origin: https://app.com · Allow-Methods · Max-Age</text>
+  <path class="ar" d="M155 120 H505"/><text class="ts" x="330" y="113" text-anchor="middle">3. PUT /data (real request, with Authorization)</text>
+  <path class="ar" d="M505 152 H155"/><text class="ts" x="330" y="146" text-anchor="middle">4. 200 + Allow-Origin → browser lets JS read the response</text>
+  <line x1="85" y1="62" x2="85" y2="160" stroke="#c7cdf5" stroke-dasharray="4 3"/>
+  <line x1="575" y1="62" x2="575" y2="160" stroke="#a7f3d0" stroke-dasharray="4 3"/>
+</svg>
+<div class="cap">Preflight flow: OPTIONS asks permission; real request only follows if allowed.</div>
+</div>
+<p class="vn">CORS do <strong>browser</strong> enforce, bảo vệ user. Request "không đơn giản" (JSON, Authorization, PUT/DELETE) → preflight OPTIONS trước. Dùng cookie: <code>credentials:'include'</code> + <code>Allow-Credentials:true</code> + origin cụ thể (không được <code>*</code>).</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How does HTTP caching work? Cache-Control, ETag, 304 — and how does a CDN like CloudFront fit in?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Two layers:</p>
+<ul>
+<li><strong>Freshness</strong> (no request at all): <code>Cache-Control: max-age=…</code>, <code>s-maxage</code> (shared caches/CDN), <code>immutable</code>, <code>public/private</code>, <code>no-store</code> (never cache) vs <code>no-cache</code> (cache but revalidate).</li>
+<li><strong>Validation</strong> (cheap request): stale entry revalidated with <code>If-None-Match: &lt;ETag&gt;</code> / <code>If-Modified-Since</code> → server answers <strong>304 Not Modified</strong> (no body) or 200 with new content.</li>
+</ul>
+<p><strong>Production pattern (fits the CV's CDN deployment):</strong> hashed asset filenames (<code>app.3f9c.js</code>) + <code>max-age=31536000, immutable</code>; HTML with <code>no-cache</code> so releases propagate instantly. CDN: <code>s-maxage</code> controls edge TTL separately; invalidate on deploy or use <code>stale-while-revalidate</code> for zero-latency refresh.</p>
+<div class="fig">
+<svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="15" y="40" width="110" height="46" rx="8"/><text class="tb" x="70" y="60" text-anchor="middle">Browser</text><text class="ts" x="70" y="76" text-anchor="middle">memory/disk cache</text>
+  <rect class="bx2" x="240" y="40" width="130" height="46" rx="8"/><text class="tb" x="305" y="60" text-anchor="middle">CDN edge</text><text class="ts" x="305" y="76" text-anchor="middle">s-maxage · HIT/MISS</text>
+  <rect class="bx3" x="500" y="40" width="130" height="46" rx="8"/><text class="tb" x="565" y="60" text-anchor="middle">Origin (S3/app)</text><text class="ts" x="565" y="76" text-anchor="middle">ETag · Cache-Control</text>
+  <path class="ar" d="M128 55 H235"/><text class="ts" x="182" y="48" text-anchor="middle">miss/stale</text>
+  <path class="ar" d="M373 55 H495"/><text class="ts" x="434" y="48" text-anchor="middle">MISS only</text>
+  <path class="ar" d="M495 78 H373"/><text class="ts" x="434" y="95" text-anchor="middle">200 / 304</text>
+  <path class="ar" d="M235 78 H128"/><text class="ts" x="182" y="95" text-anchor="middle">cached response</text>
+</svg>
+<div class="cap">Each layer answers if fresh; validation (ETag/304) avoids re-downloading bodies.</div>
+</div>
+<p class="vn">2 tầng: freshness (<code>max-age</code>, không gửi request) và validation (<code>ETag</code> → 304, request nhẹ). Pattern chuẩn: asset có hash + <code>immutable</code> 1 năm; HTML <code>no-cache</code>. CDN dùng <code>s-maxage</code> riêng.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Core Web Vitals: what are LCP, INP, CLS, and how do you improve each?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<ul>
+<li><strong>LCP</strong> (Largest Contentful Paint, ≤2.5s): time to render the biggest element. Improve: server/CDN speed (TTFB), preload hero image / <code>fetchpriority="high"</code>, inline critical CSS, SSR, compress images (AVIF/WebP).</li>
+<li><strong>INP</strong> (Interaction to Next Paint, ≤200ms — replaced FID in 2024): worst-case interaction latency. Improve: break long tasks (<code>scheduler.yield</code> / chunking), less JS on main thread, web workers for heavy computation (e.g. chart indicator math), avoid huge renders on input — debounce, virtualize, use CSS <code>content-visibility</code>.</li>
+<li><strong>CLS</strong> (Cumulative Layout Shift, ≤0.1): unexpected movement. Improve: width/height (or <code>aspect-ratio</code>) on images/embeds/ad slots, reserve space for dynamic content, <code>font-display: optional/swap</code> + font preloading, never insert banners above existing content.</li>
+</ul>
+<p>Senior signal: distinguish <strong>lab</strong> (Lighthouse) vs <strong>field</strong> data (CrUX, RUM via <code>web-vitals</code> library) and mention monitoring in production.</p>
+<p class="vn">LCP ≤2.5s (tối ưu tài nguyên lớn nhất), INP ≤200ms (cắt long task, đưa tính toán vào worker), CLS ≤0.1 (giữ chỗ trước cho ảnh/font/banner). Phân biệt lab vs field data.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Web security: explain XSS and CSRF, and how to prevent each.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>XSS</strong> — attacker's JS runs in your page's origin (steals tokens, acts as user). Types: stored, reflected, DOM-based. Defenses:</p>
+<ul>
+<li>Output encoding by default (React escapes JSX text — but <code>dangerouslySetInnerHTML</code>, <code>href="javascript:"</code>, and direct <code>innerHTML</code> bypass it). Sanitize rich HTML with DOMPurify.</li>
+<li><strong>CSP</strong> (<code>script-src 'self' 'nonce-…'</code>) as defense-in-depth; <code>HttpOnly</code> cookies so tokens can't be read.</li>
+</ul>
+<p><strong>CSRF</strong> — victim's browser auto-sends cookies with a forged cross-site request (state-changing POST). Defenses:</p>
+<ul>
+<li><code>SameSite=Lax/Strict</code> cookies (Lax is default in Chrome — blocks most CSRF).</li>
+<li>CSRF tokens (synchronizer or double-submit), checking <code>Origin</code>/<code>Referer</code> headers, requiring custom headers (forces CORS preflight).</li>
+</ul>
+<p>Memorable contrast: <strong>XSS = attacker runs code on your site; CSRF = attacker borrows the user's cookies from another site.</strong> Also worth naming: clickjacking (<code>frame-ancestors</code>), dependency/supply-chain attacks, secrets never in frontend bundles.</p>
+<p class="vn">XSS = chạy JS lạ trong origin của bạn → escape output, DOMPurify, CSP, HttpOnly. CSRF = trang khác mượn cookie của user → SameSite, CSRF token, check Origin. React vẫn dính XSS qua <code>dangerouslySetInnerHTML</code>.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Web Workers vs Service Workers — differences and when to use each?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<ul>
+<li><strong>Web Worker</strong>: a background <em>thread</em> for one page. No DOM access; communicates via <code>postMessage</code> (structured clone) or <code>SharedArrayBuffer</code>/Transferable for zero-copy. Use for CPU-heavy work: parsing large datasets, technical-indicator computation for charts, image processing — keeps INP low. <code>OffscreenCanvas</code> even allows rendering charts from a worker.</li>
+<li><strong>Service Worker</strong>: an event-driven <em>network proxy</em> shared by all tabs of an origin, with its own lifecycle (install/activate; can be killed anytime — no global state). Intercepts <code>fetch</code>, powering offline/PWA, cache strategies (cache-first, stale-while-revalidate), push notifications, background sync.</li>
+</ul>
+<p>Rule of thumb: <strong>computation → Web Worker; network/caching/offline → Service Worker.</strong> Both are async-only and DOM-less; Shared Workers are a third variant shared across tabs.</p>
+<p class="vn">Web Worker = luồng tính toán cho 1 trang (tính indicator chart, parse data lớn). Service Worker = proxy mạng của cả origin (offline, cache, push). Tính toán → WW; mạng/cache → SW.</p>
+</div>
+</details>
+</section>
+<section id="sec-react">
+<h2>4 · React</h2>
+<p class="sec-desc">Rendering model, hooks pitfalls, and performance for data-intensive UIs.</p>
+
+<details class="q">
+<summary>How does React's reconciliation work? What is Fiber, and why do keys matter?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> On state change React re-runs the component to produce a new element tree, then <strong>diffs</strong> it against the previous one with two heuristics: (1) different element <em>type</em> → tear down and rebuild the subtree; (2) lists are matched by <strong>key</strong> — stable identity lets React move/keep nodes instead of re-creating them. Index-as-key breaks state association when items reorder/insert (wrong input values, lost focus, mangled animations).</p>
+<p><strong>Fiber</strong> is the reimplementation that makes rendering <em>interruptible</em>: work is split into units (one fiber per component), processed with priorities, pausable/resumable. Render phase (pure, can be discarded/restarted) vs commit phase (DOM mutations, synchronous). This underpins concurrent features (transitions, Suspense).</p>
+<div class="fig">
+<svg viewBox="0 0 660 170" xmlns="http://www.w3.org/2000/svg">
+  <text class="tb" x="160" y="22" text-anchor="middle">key = index (reorder ⇒ rewrites)</text>
+  <rect class="bx2" x="60" y="35" width="200" height="26" rx="6"/><text class="ts" x="160" y="52" text-anchor="middle">0:A  1:B  2:C</text>
+  <rect class="bx2" x="60" y="95" width="200" height="26" rx="6"/><text class="ts" x="160" y="112" text-anchor="middle">0:X  1:A  2:B  3:C</text>
+  <path class="ar2" d="M160 63 V90"/>
+  <text class="ts" x="160" y="140" text-anchor="middle">every index changed →</text>
+  <text class="ts" x="160" y="154" text-anchor="middle">4 DOM updates, state mismatch</text>
+  <text class="tb" x="490" y="22" text-anchor="middle">key = id (reorder ⇒ moves)</text>
+  <rect class="bx3" x="390" y="35" width="200" height="26" rx="6"/><text class="ts" x="490" y="52" text-anchor="middle">a:A  b:B  c:C</text>
+  <rect class="bx3" x="390" y="95" width="200" height="26" rx="6"/><text class="ts" x="490" y="112" text-anchor="middle">x:X  a:A  b:B  c:C</text>
+  <path class="ar" d="M490 63 V90"/>
+  <text class="ts" x="490" y="140" text-anchor="middle">A, B, C reused as-is →</text>
+  <text class="ts" x="490" y="154" text-anchor="middle">1 insertion only</text>
+</svg>
+<div class="cap">Stable keys let the diff reuse nodes; index keys force rewrites and corrupt component state.</div>
+</div>
+<p class="vn">Diff theo type + key. Key phải ổn định theo identity (id), không dùng index khi list thay đổi thứ tự. Fiber = render có thể ngắt/ưu tiên; render phase có thể huỷ, commit phase sync.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>useEffect deep-dive: dependency array, cleanup, and the fetch race-condition bug.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Effects synchronize a component with external systems <em>after</em> commit. Deps array = every reactive value read inside (lint enforces this — don't silence it, restructure). Cleanup runs before the next effect and on unmount.</p>
+<pre><code>useEffect(() =&gt; {
+  let cancelled = false;                    // or use AbortController
+  const ctrl = new AbortController();
+  fetch(`/api/items/${id}`, { signal: ctrl.signal })
+    .then(r =&gt; r.json())
+    .then(data =&gt; { if (!cancelled) setItem(data); });
+  return () =&gt; { cancelled = true; ctrl.abort(); };  // cleanup kills stale request
+}, [id]);</code></pre>
+<p>Without cleanup, rapid <code>id</code> changes create a <strong>race</strong>: an older, slower response can arrive last and overwrite newer data. Other senior points:</p>
+<ul>
+<li>Common mistakes: object/function deps re-created each render (→ infinite loops; fix with useMemo/useCallback or move inside), effects used for derived state (compute during render instead), missing cleanup of listeners/intervals/sockets.</li>
+<li>Strict Mode double-invokes mount effects in dev precisely to expose missing cleanup.</li>
+<li>In real apps, prefer React Query/SWR for data fetching — caching, dedup, and cancellation solved.</li>
+</ul>
+<p class="vn">Effect = đồng bộ với hệ thống ngoài, chạy sau commit. Luôn cleanup (abort fetch, remove listener). Bug race: response cũ về sau đè data mới → cancelled flag/AbortController. Derived state thì tính trong render, đừng dùng effect.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>When do you use React.memo, useMemo, useCallback — and when are they harmful?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> A component re-renders when its parent re-renders (props equality is irrelevant by default) or its own state/context changes.</p>
+<ul>
+<li><code>React.memo(C)</code>: skip re-render if props are shallow-equal. Only effective if props are referentially stable — which is where the other two come in.</li>
+<li><code>useMemo</code>: cache a computed <em>value</em> (expensive derivation, or stabilize an object/array passed to a memoized child).</li>
+<li><code>useCallback(fn, deps)</code> ≡ <code>useMemo(() =&gt; fn, deps)</code>: stabilize function identity for memo'd children / effect deps.</li>
+</ul>
+<p><strong>Harmful when:</strong> applied everywhere by default — each adds memory + comparison overhead and hides real problems; a single unstable prop (inline object, children JSX) silently defeats <code>memo</code>. Measure first with React DevTools Profiler. Often better fixes: <strong>move state down</strong> (isolate the changing part), <strong>lift content up</strong> (pass expensive subtree as <code>children</code> — it doesn't re-render when the wrapper's state changes). React 19's compiler auto-memoizes, making manual memo mostly obsolete going forward.</p>
+<p class="vn">memo = chặn re-render khi props không đổi (shallow); useMemo/useCallback để giữ reference ổn định. Đừng rải khắp nơi — đo bằng Profiler trước; ưu tiên tách state xuống thấp hoặc đưa subtree vào <code>children</code>.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How do you render 100K+ data points (tables/charts) in React without killing performance?<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Model answer (very likely asked given the charting background):</strong></p>
+<ul>
+<li><strong>Don't put points in the DOM.</strong> DOM/SVG scale to thousands, not hundreds of thousands. Charts → <strong>canvas</strong> (one element; redraw per frame) or WebGL for millions of points. React manages the shell; the draw loop is imperative via refs — exactly the ChartIQ SDK model.</li>
+<li><strong>Virtualize lists/tables</strong> (react-window / TanStack Virtual): render only visible rows + overscan.</li>
+<li><strong>Decouple data rate from render rate:</strong> streaming ticks arrive faster than 60fps — buffer them and flush once per <code>requestAnimationFrame</code>; batch state updates; keep raw data in refs (not state) so ticks don't trigger React renders.</li>
+<li><strong>Downsample for display</strong> (LTTB algorithm, or aggregate to candles/buckets) — the screen only has ~2K horizontal pixels anyway.</li>
+<li>Move heavy computation (indicators, aggregation) to a <strong>Web Worker</strong>; use <code>useTransition</code>/<code>useDeferredValue</code> so typing/panning stays responsive while heavy views update.</li>
+</ul>
+<p class="vn">DOM không chịu nổi 100K điểm → canvas/WebGL, React chỉ quản lý vỏ. Virtualize bảng. Data streaming: buffer rồi vẽ theo rAF, giữ data trong ref. Downsample (LTTB/candle) vì màn hình chỉ ~2K pixel ngang. Tính nặng → Web Worker.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Explain React 18+ concurrent features: transitions, useDeferredValue, Suspense, automatic batching.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<ul>
+<li><strong>Automatic batching:</strong> since 18, multiple setState calls are batched into one render everywhere (previously only in event handlers — timeouts/promises caused multiple renders).</li>
+<li><strong>Transitions:</strong> <code>startTransition(() =&gt; setFilter(v))</code> marks an update as non-urgent — React keeps the UI responsive, can interrupt the render if newer urgent input arrives; <code>isPending</code> drives spinners. Classic use: search box (urgent: input text; transition: filtering 10K rows).</li>
+<li><strong><code>useDeferredValue</code>:</strong> same idea when you can't wrap the setter — a lagging copy of a value for the expensive subtree.</li>
+<li><strong>Suspense:</strong> declarative loading boundaries; components "suspend" while data/code loads and the fallback shows. Powers <code>React.lazy</code>, SSR streaming (selective hydration), and data frameworks (React Query, RSC). React 19 adds <code>use()</code> for reading promises.</li>
+</ul>
+<p>Key concept to articulate: concurrency ≠ parallelism — React can <strong>pause, resume, or abandon</strong> renders so urgent updates jump the queue.</p>
+<p class="vn">Batching tự động ở mọi nơi từ React 18. Transition = update "không gấp", có thể bị ngắt bởi input khẩn cấp. useDeferredValue = bản trễ của value. Suspense = khai báo loading boundary, nền tảng cho streaming SSR.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How do you decide between local state, Context, Redux/Zustand, and React Query?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer — classify the state first:</strong></p>
+<ul>
+<li><strong>Server state</strong> (data owned by the backend): React Query/SWR — caching, revalidation, dedup, optimistic updates. Storing it in Redux by hand re-implements all of that badly.</li>
+<li><strong>Local UI state</strong>: <code>useState</code>/<code>useReducer</code>, kept as close to usage as possible.</li>
+<li><strong>Shared client state</strong> (theme, auth session, cross-widget chart settings): Context for low-frequency values; Zustand/Redux for frequently-updated or complex state.</li>
+<li><strong>URL state</strong> (filters, tab, symbol): the router — shareable and survives refresh.</li>
+</ul>
+<p>Context caveat: every consumer re-renders when the value changes — split contexts (state vs dispatch), memoize the value object; it's a DI mechanism, not a state manager. Zustand avoids this with selector-based subscriptions. Senior signal: "most apps need far less global state than they think — server state to React Query, and the rest shrinks dramatically."</p>
+<p class="vn">Phân loại trước: server state → React Query; UI cục bộ → useState; shared client → Context (ít đổi) / Zustand (đổi nhiều); filter/tab → URL. Context đổi value là mọi consumer re-render — tách context, memo value.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Controlled vs uncontrolled components — trade-offs at form scale?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Controlled = React state is the source of truth (<code>value</code> + <code>onChange</code>): instant validation, dependent fields, easy programmatic control — but every keystroke re-renders, painful in 50-field forms. Uncontrolled = the DOM holds the value (<code>defaultValue</code> + ref/FormData): minimal renders, less code, native form semantics.</p>
+<p>At scale, libraries like <strong>react-hook-form</strong> win by registering uncontrolled inputs and subscribing to changes selectively — near-zero re-renders with controlled-level validation. React 19's form actions (<code>useActionState</code>, <code>&lt;form action={fn}&gt;</code>) push further toward native forms. Rule: small/dynamic forms → controlled; big forms → RHF/uncontrolled.</p>
+<p class="vn">Controlled: state React là nguồn chân lý, validate tức thì nhưng re-render mỗi phím. Uncontrolled: DOM giữ giá trị, nhanh. Form lớn → react-hook-form (uncontrolled + subscribe chọn lọc).</p>
+</div>
+</details>
+
+<details class="q">
+<summary>SSR vs CSR vs SSG, and what exactly is hydration? What is a hydration mismatch?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> CSR ships an empty shell + JS bundle (slow first paint, fine for internal dashboards). SSR renders HTML per-request on the server (fast FCP/LCP, SEO). SSG pre-renders at build time (fastest, for content that rarely changes; ISR revalidates periodically).</p>
+<p><strong>Hydration</strong>: the client re-renders the same tree and <em>attaches</em> event listeners to existing server HTML instead of rebuilding it. A <strong>mismatch</strong> (server HTML ≠ first client render — from <code>Date.now()</code>, random values, locale formatting, or browser-only branches like <code>window.innerWidth</code>) forces React to discard and re-render, causing flicker/warnings. Fixes: render browser-only parts after mount (<code>useEffect</code> gate), <code>suppressHydrationWarning</code> for timestamps, consistent locale data from the server.</p>
+<p>Modern nuance: React 18 streaming SSR + selective hydration (Suspense boundaries hydrate independently, interaction prioritizes hydration); RSC (Server Components) send zero JS for server-only parts. Trade-off to mention: SSR costs server infra and TTFB work — a charts dashboard behind login may not need it.</p>
+<p class="vn">SSR = HTML từ server + hydration (gắn listener vào HTML sẵn có). Mismatch xảy ra khi server render khác client (Date, random, window) → flicker. Nội bộ/dashboard sau login thường không cần SSR.</p>
+</div>
+</details>
+</section>
+<section id="sec-node">
+<h2>5 · Node.js Core</h2>
+<p class="sec-desc">Runtime internals, streams, scaling, and production hardening.</p>
+
+<details class="q">
+<summary>Describe Node.js architecture and the event loop phases. How does it differ from the browser's loop?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Node = V8 (JS execution) + <strong>libuv</strong> (event loop + async I/O + a thread pool, default 4 threads, for fs, dns.lookup, crypto, zlib) + C++ bindings. Network I/O is <em>not</em> in the thread pool — it uses OS non-blocking primitives (epoll/kqueue).</p>
+<p>Loop phases, per iteration:</p>
+<ol>
+<li><strong>timers</strong> — expired <code>setTimeout</code>/<code>setInterval</code></li>
+<li><strong>pending callbacks</strong> — deferred system callbacks</li>
+<li><strong>poll</strong> — retrieve new I/O events; may block here waiting</li>
+<li><strong>check</strong> — <code>setImmediate</code></li>
+<li><strong>close callbacks</strong> — <code>'close'</code> events</li>
+</ol>
+<p>Between every callback, Node drains <strong><code>process.nextTick</code> queue first, then microtasks</strong> (promises). Differences vs browser: named phases and <code>setImmediate</code>/<code>nextTick</code> exist only in Node; no rendering step; inside an I/O callback <code>setImmediate</code> always beats <code>setTimeout(0)</code>.</p>
+<div class="fig">
+<svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="30" y="20" width="120" height="40" rx="8"/><text class="tb" x="90" y="45" text-anchor="middle">timers</text>
+  <rect class="bx" x="200" y="20" width="150" height="40" rx="8"/><text class="tb" x="275" y="45" text-anchor="middle">pending callbacks</text>
+  <rect class="bx" x="400" y="20" width="120" height="40" rx="8"/><text class="tb" x="460" y="38" text-anchor="middle">poll</text><text class="ts" x="460" y="52" text-anchor="middle">I/O events (may wait)</text>
+  <rect class="bx" x="570" y="20" width="110" height="40" rx="8"/><text class="tb" x="625" y="38" text-anchor="middle">check</text><text class="ts" x="625" y="52" text-anchor="middle">setImmediate</text>
+  <rect class="bx" x="400" y="150" width="140" height="40" rx="8"/><text class="tb" x="470" y="175" text-anchor="middle">close callbacks</text>
+  <path class="ar" d="M152 40 H195"/><path class="ar" d="M352 40 H395"/><path class="ar" d="M522 40 H565"/>
+  <path class="ar" d="M625 62 Q625 170 545 172"/>
+  <path class="ar" d="M398 170 Q60 170 88 64"/>
+  <rect class="bx3" x="120" y="95" width="360" height="38" rx="8"/>
+  <text class="tb" x="300" y="112" text-anchor="middle">after EVERY callback:</text>
+  <text class="ts" x="300" y="126" text-anchor="middle">drain process.nextTick queue → then Promise microtasks</text>
+  <rect class="bx2" x="545" y="95" width="140" height="38" rx="8"/><text class="tb" x="615" y="112" text-anchor="middle">libuv thread pool</text><text class="ts" x="615" y="126" text-anchor="middle">fs · crypto · zlib · dns</text>
+</svg>
+<div class="cap">libuv event loop phases; nextTick + microtasks run between callbacks, not as a phase.</div>
+</div>
+<p class="vn">Node = V8 + libuv. 5 phase: timers → pending → poll → check(setImmediate) → close. <code>nextTick</code> → microtask chạy xen giữa mỗi callback. Network I/O dùng epoll (không phải thread pool); fs/crypto mới dùng thread pool (mặc định 4).</p>
+</div>
+</details>
+
+<details class="q">
+<summary>"Node is single-threaded" — is that accurate? How do you detect and avoid blocking the event loop?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Only the JS execution is single-threaded. libuv's thread pool, worker_threads, and the OS handle work in parallel. But one <code>JSON.parse</code> of a 50MB payload, a catastrophic regex (ReDoS), or sync fs/crypto calls freeze <em>every</em> request — that's the real meaning of "don't block the loop".</p>
+<ul>
+<li><strong>Detect:</strong> event-loop lag metrics (<code>perf_hooks.monitorEventLoopDelay()</code>), APM dashboards, <code>--prof</code>/clinic.js flame graphs, slow p99 with idle CPU on other cores.</li>
+<li><strong>Avoid:</strong> never use <code>*Sync</code> APIs in request paths; chunk big loops (<code>setImmediate</code> between batches); stream instead of buffering; offload CPU work to <code>worker_threads</code>; validate/limit input sizes; bump <code>UV_THREADPOOL_SIZE</code> if fs/crypto-bound.</li>
+</ul>
+<pre><code>const { monitorEventLoopDelay } = require('perf_hooks');
+const h = monitorEventLoopDelay(); h.enable();
+setInterval(() =&gt; console.log('p99 loop delay ms:', h.percentile(99) / 1e6), 5000);</code></pre>
+<p class="vn">Chỉ JS là single-thread. 1 tác vụ CPU nặng chặn <strong>mọi</strong> request. Đo bằng event-loop delay; tránh API *Sync, chia nhỏ vòng lặp, stream thay vì buffer, đẩy CPU-bound sang worker_threads.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Node streams and backpressure — explain and show how to process a large file safely.<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Streams process data in chunks with bounded memory. Four types: Readable, Writable, Duplex, Transform. <strong>Backpressure</strong>: when a fast producer outruns a slow consumer, <code>writable.write()</code> returns <code>false</code> (internal buffer ≥ <code>highWaterMark</code>) — the producer must pause until <code>'drain'</code>. <code>pipe()</code>/<code>pipeline()</code> handle this automatically; <code>pipeline()</code> additionally propagates errors and destroys all streams (pipe leaks on error — always prefer pipeline).</p>
+<pre><code>const { pipeline } = require('stream/promises');
+await pipeline(
+  fs.createReadStream('huge.csv'),          // ~64KB chunks
+  zlib.createGzip(),                         // Transform
+  fs.createWriteStream('huge.csv.gz')        // backpressure handled
+);</code></pre>
+<div class="fig">
+<svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="20" y="30" width="140" height="50" rx="8"/><text class="tb" x="90" y="52" text-anchor="middle">Readable</text><text class="ts" x="90" y="68" text-anchor="middle">fast producer</text>
+  <rect class="bx3" x="280" y="30" width="150" height="50" rx="8"/><text class="tb" x="355" y="52" text-anchor="middle">Transform</text><text class="ts" x="355" y="68" text-anchor="middle">gzip</text>
+  <rect class="bx2" x="540" y="30" width="140" height="50" rx="8"/><text class="tb" x="610" y="52" text-anchor="middle">Writable</text><text class="ts" x="610" y="68" text-anchor="middle">slow consumer</text>
+  <path class="ar" d="M162 48 H275"/><text class="ts" x="218" y="40" text-anchor="middle">chunks</text>
+  <path class="ar" d="M432 48 H535"/>
+  <path class="ar2" d="M540 90 Q355 125 165 90"/>
+  <text class="ts" x="355" y="118" text-anchor="middle">backpressure: write() === false → pause → 'drain' → resume</text>
+</svg>
+<div class="cap">Bounded-memory pipeline: the slow end signals the fast end to pause.</div>
+</div>
+<p>Real uses: HTTP responses are streams (pipe a DB export to the client), CSV/report generation, proxying uploads to S3 — constant memory regardless of file size.</p>
+<p class="vn">Stream xử lý theo chunk, RAM cố định. Backpressure: <code>write()</code> trả <code>false</code> → dừng đến khi <code>'drain'</code>. Luôn dùng <code>pipeline()</code> thay <code>pipe()</code> (tự xử lý lỗi + destroy).</p>
+</div>
+</details>
+
+<details class="q">
+<summary>cluster vs worker_threads vs child_process — when to use each?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<table>
+<tr><th></th><th>cluster</th><th>worker_threads</th><th>child_process</th></tr>
+<tr><td>Unit</td><td>Processes (fork of same app)</td><td>Threads in one process</td><td>Any process/command</td></tr>
+<tr><td>Memory</td><td>Isolated (heavy)</td><td>Own V8 heap, but can share via <code>SharedArrayBuffer</code></td><td>Isolated</td></tr>
+<tr><td>Best for</td><td>Scaling an HTTP server across CPU cores (shared server port)</td><td>CPU-bound JS (parsing, crypto, image/report processing)</td><td>Running external programs (ffmpeg, git), sandboxing</td></tr>
+<tr><td>Communication</td><td>IPC messages</td><td>postMessage / shared memory (fast)</td><td>stdio / IPC</td></tr>
+</table>
+<p><strong>Rule:</strong> I/O-bound scaling → cluster (or better: multiple containers behind a load balancer — same idea, plus PM2/K8s handles restarts). CPU-bound tasks inside a service → worker_threads (usually a pool, e.g. piscina). External binaries → child_process. Senior nuance: in Docker/K8s deployments cluster is often unnecessary — run 1 process per container and scale replicas.</p>
+<p class="vn">cluster = nhân process để tận dụng CPU cores cho HTTP (trong K8s thường không cần — scale replica). worker_threads = tính toán CPU nặng trong 1 service. child_process = chạy chương trình ngoài.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Error handling in Node: async errors, unhandledRejection, and graceful shutdown.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<ul>
+<li><strong>Async errors:</strong> try/catch works with await; raw callbacks need error-first convention; event emitters need an <code>'error'</code> listener (an unhandled <code>'error'</code> event throws). Express 4 does <em>not</em> catch rejected promises in handlers — wrap them or use Express 5 / NestJS which do.</li>
+<li><strong>Process-level:</strong> <code>uncaughtException</code> / <code>unhandledRejection</code> mean the process is in an unknown state → log, flush telemetry, and <strong>exit</strong>; let the orchestrator restart. Don't "keep calm and carry on" — you risk corrupted state. Distinguish <em>operational</em> errors (expected: 404, validation, timeouts → handle) from <em>programmer</em> errors (bugs → crash fast).</li>
+<li><strong>Graceful shutdown:</strong> on <code>SIGTERM</code>: stop accepting connections (<code>server.close()</code>), finish in-flight requests with a deadline, close DB pools/queues, then exit — critical for zero-downtime deploys (K8s sends SIGTERM before SIGKILL).</li>
+</ul>
+<pre><code>process.on('SIGTERM', async () =&gt; {
+  server.close();                       // stop new connections
+  await Promise.race([drainInflight(), sleep(10_000)]);
+  await db.end();
+  process.exit(0);
+});</code></pre>
+<p class="vn">Lỗi operational (validate, 404) → xử lý; lỗi programmer → crash nhanh, để orchestrator restart. Express 4 không tự bắt promise reject. SIGTERM: đóng server → chờ request đang chạy (có deadline) → đóng DB → exit.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Express middleware model — how does it work, including error middleware? How does NestJS differ?<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Express is a pipeline of <code>(req, res, next)</code> functions executed in registration order; <code>next()</code> passes control, <code>next(err)</code> jumps to <strong>error middleware</strong> — recognized by its 4-arg signature <code>(err, req, res, next)</code> and registered last. Middleware composes cross-cutting concerns: parsing, auth, logging, rate limiting.</p>
+<pre><code>app.use(express.json());
+app.use(authenticate);
+app.get('/orders', asyncHandler(getOrders));   // wrapper forwards rejections to next(err)
+app.use((err, req, res, next) =&gt; {             // centralized error handler
+  logger.error(err);
+  res.status(err.status ?? 500).json({ message: err.expose ? err.message : 'Internal error' });
+});</code></pre>
+<p><strong>NestJS</strong> (used at Nexon per CV) layers structure on top: <strong>modules</strong> + <strong>dependency injection</strong> (testability, swappable providers), and dedicated primitives instead of "everything is middleware" — <strong>guards</strong> (auth), <strong>interceptors</strong> (transform/logging), <strong>pipes</strong> (validation/transform), <strong>exception filters</strong> (errors). Opinionated architecture pays off on large teams; Express wins for small services and minimal overhead.</p>
+<p class="vn">Express = chuỗi middleware, <code>next(err)</code> nhảy tới error handler 4 tham số. NestJS thêm DI + module + guard/interceptor/pipe/filter — cấu trúc rõ cho team lớn, dễ test.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How do you find a memory leak in a production Node service?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer — a repeatable workflow:</strong></p>
+<ol>
+<li><strong>Confirm:</strong> plot <code>process.memoryUsage().heapUsed</code> / container RSS over time — steady climb across GCs = leak (sawtooth that returns to baseline = normal).</li>
+<li><strong>Capture:</strong> take 2–3 heap snapshots spaced apart under load (<code>--inspect</code> + Chrome DevTools, or <code>v8.writeHeapSnapshot()</code> / heapdump in prod).</li>
+<li><strong>Compare:</strong> DevTools "Comparison" view — sort by retained size delta; look at what's growing (arrays, Maps, closures) and follow <strong>retainer paths</strong> to find who holds the reference.</li>
+<li><strong>Usual suspects:</strong> module-level caches without eviction, event listeners added per-request on shared emitters (watch for MaxListenersExceededWarning), closures in long-lived timers, unbounded in-memory sessions/metrics, sockets never closed.</li>
+<li><strong>Fix &amp; verify:</strong> LRU/TTL caches, <code>WeakMap</code> for object-keyed metadata, cleanup handlers; re-run load test and watch the curve flatten.</li>
+</ol>
+<p>Mention allocation sampling/clinic.js heapprofiler for hard cases, and <code>--max-old-space-size</code> only as mitigation, never a fix.</p>
+<p class="vn">Quy trình: xác nhận qua metric heap tăng đều → chụp 2–3 heap snapshot → so sánh, lần theo retainer path → nghi phạm quen thuộc: cache không giới hạn, listener chồng chất, timer giữ closure → fix bằng LRU/WeakMap rồi load test lại.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How do you secure a Node.js REST API? Name the top measures you actually apply.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<ul>
+<li><strong>Input validation at the edge</strong> (zod/class-validator in NestJS pipes) — types, sizes, allowlists; body size limits (<code>express.json({limit})</code>).</li>
+<li><strong>Injection defense:</strong> parameterized queries/ORM (SQLi), never build shell commands from input, sanitize NoSQL operators (<code>$gt</code> tricks).</li>
+<li><strong>AuthN/AuthZ:</strong> short-lived JWTs (verify algorithm — reject <code>alg:none</code>/HS-RS confusion), refresh rotation, authorization checks per resource (IDOR is the #1 real-world API bug).</li>
+<li><strong>Rate limiting &amp; brute-force protection</strong> (per-IP + per-account), <code>helmet</code> for headers, strict CORS allowlist.</li>
+<li><strong>Secrets &amp; supply chain:</strong> env/secret manager (never in repo), lockfiles + <code>npm audit</code>/Dependabot/socket.dev, principle of least privilege for DB users.</li>
+<li><strong>Ops:</strong> HTTPS everywhere, structured logs without PII/tokens, dependency-free error messages to clients (no stack traces).</li>
+</ul>
+<p class="vn">Validate input ở edge (zod), query có tham số, JWT ngắn hạn + check quyền theo resource (IDOR!), rate limit, helmet + CORS allowlist, secret trong secret manager, không lộ stack trace.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>What is a Buffer? How does Node handle binary data and character encodings?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> <code>Buffer</code> is Node's fixed-size raw-memory container (a <code>Uint8Array</code> subclass, allocated outside the V8 heap). Everything binary flows through it: file I/O, TCP sockets, crypto, stream chunks.</p>
+<pre><code>const b = Buffer.from('xin chào', 'utf8');   // encode
+b.toString('base64');                         // re-encode
+Buffer.alloc(1024);                           // zero-filled (safe)
+Buffer.allocUnsafe(1024);                     // faster, may contain old memory — must overwrite</code></pre>
+<p>Points that show depth: <code>allocUnsafe</code> risk (leaking stale memory); string length ≠ byte length (<code>Buffer.byteLength('chào')</code> &gt; 4) — matters for Content-Length; multi-byte UTF-8 characters can be <strong>split across stream chunks</strong> — decode with <code>string_decoder</code> or set encoding on the stream instead of concatenating chunk.toString().</p>
+<p class="vn">Buffer = bộ nhớ thô ngoài heap V8 (Uint8Array). <code>allocUnsafe</code> nhanh nhưng chứa rác bộ nhớ cũ. Ký tự UTF-8 nhiều byte có thể bị cắt giữa 2 chunk → dùng <code>string_decoder</code>.</p>
+</div>
+</details>
+</section>
+<section id="sec-db">
+<h2>6 · Database Core</h2>
+<p class="sec-desc">Indexes, transactions, scaling patterns — asked in almost every senior fullstack loop.</p>
+
+<details class="q">
+<summary>How does a B-tree index work? When is an index NOT used, and what is the leftmost-prefix rule?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> A B+tree keeps sorted keys in a shallow, wide tree (hundreds of keys per node ≈ 3–4 levels for millions of rows), so a lookup is O(log n) with very few disk pages read. Leaf nodes hold pointers to rows (or the row itself in a clustered index) and are <strong>linked</strong> — which is why range scans and ORDER BY on the index are cheap.</p>
+<div class="fig">
+<svg viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx" x="270" y="15" width="120" height="36" rx="8"/><text class="tb" x="330" y="38" text-anchor="middle">[ 40 | 80 ]</text>
+  <rect class="bx3" x="60" y="90" width="130" height="36" rx="8"/><text class="tb" x="125" y="113" text-anchor="middle">[ 10 | 25 ]</text>
+  <rect class="bx3" x="265" y="90" width="130" height="36" rx="8"/><text class="tb" x="330" y="113" text-anchor="middle">[ 55 | 70 ]</text>
+  <rect class="bx3" x="470" y="90" width="130" height="36" rx="8"/><text class="tb" x="535" y="113" text-anchor="middle">[ 90 | 120 ]</text>
+  <path class="ar" d="M300 53 Q200 65 135 87"/><path class="ar" d="M330 53 V85"/><path class="ar" d="M362 53 Q460 65 525 87"/>
+  <rect class="bxg" x="35" y="165" width="180" height="32" rx="6"/><text class="ts" x="125" y="185" text-anchor="middle">leaf: 5,10 · 25,30 → rows</text>
+  <rect class="bxg" x="240" y="165" width="180" height="32" rx="6"/><text class="ts" x="330" y="185" text-anchor="middle">leaf: 42,55 · 70,75 → rows</text>
+  <rect class="bxg" x="445" y="165" width="180" height="32" rx="6"/><text class="ts" x="535" y="185" text-anchor="middle">leaf: 85,90 · 120,… → rows</text>
+  <path class="ar" d="M125 128 V160"/><path class="ar" d="M330 128 V160"/><path class="ar" d="M535 128 V160"/>
+  <path class="ar2" d="M217 181 H236"/><path class="ar2" d="M422 181 H441"/>
+  <text class="ts" x="330" y="214" text-anchor="middle">linked leaves → fast range scans (WHERE ts BETWEEN … ORDER BY ts)</text>
+</svg>
+<div class="cap">B+tree: shallow fan-out for point lookups; linked leaves for ranges.</div>
+</div>
+<p><strong>Index is skipped when:</strong> a function/cast wraps the column (<code>WHERE YEAR(created_at)=2026</code> → rewrite as range), leading wildcard <code>LIKE '%x'</code>, low selectivity (optimizer prefers full scan), type mismatch, OR across different columns, or stale statistics.</p>
+<p><strong>Composite index <code>(a, b, c)</code></strong> — leftmost prefix: usable for <code>a</code>, <code>a,b</code>, <code>a,b,c</code>, and <code>a + range on b</code> (but the range stops further use of <code>c</code>). Not usable for <code>b</code> or <code>c</code> alone. Order columns: equality filters first, then range/sort columns. Also mention covering indexes (index-only scans) and that every index taxes writes.</p>
+<p class="vn">B+tree nông và rộng → tìm điểm O(log n), leaf nối nhau → range scan nhanh. Index bị bỏ qua khi bọc hàm quanh cột, <code>LIKE '%…'</code>, selectivity thấp. Composite (a,b,c): phải dùng từ trái sang; equality trước, range sau. Index nhiều = ghi chậm.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Explain ACID and the four isolation levels with their anomalies.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>ACID:</strong> Atomicity (all-or-nothing, via WAL/undo), Consistency (constraints hold), Isolation (concurrent txns don't interfere — degree is configurable), Durability (committed = survives crash, via WAL fsync).</p>
+<table>
+<tr><th>Level</th><th>Dirty read</th><th>Non-repeatable read</th><th>Phantom read</th><th>Notes</th></tr>
+<tr><td>Read Uncommitted</td><td>❌ possible</td><td>❌</td><td>❌</td><td>rarely used</td></tr>
+<tr><td>Read Committed</td><td>✅ prevented</td><td>❌</td><td>❌</td><td><strong>Postgres default</strong></td></tr>
+<tr><td>Repeatable Read</td><td>✅</td><td>✅</td><td>❌ (✅ in MySQL InnoDB mostly)</td><td><strong>MySQL default</strong>; PG version also stops phantoms</td></tr>
+<tr><td>Serializable</td><td>✅</td><td>✅</td><td>✅</td><td>as if sequential; retry on serialization failure</td></tr>
+</table>
+<ul>
+<li><strong>Dirty read:</strong> seeing uncommitted data. <strong>Non-repeatable:</strong> same row differs when re-read. <strong>Phantom:</strong> same query returns new rows.</li>
+<li>Modern DBs use <strong>MVCC</strong> (snapshots) so readers don't block writers. Higher isolation = more retries/locking, lower throughput.</li>
+<li>Classic trap question — <em>lost update</em> (read-modify-write races): fix with atomic <code>UPDATE … SET balance = balance - 10</code>, <code>SELECT … FOR UPDATE</code> (pessimistic), or a version column (optimistic locking).</li>
+</ul>
+<p class="vn">4 mức isolation chặn dần: dirty read → non-repeatable → phantom. Postgres mặc định Read Committed, MySQL Repeatable Read. MVCC = đọc snapshot, không chặn ghi. Lost update: fix bằng update nguyên tử / FOR UPDATE / version column.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>SQL vs NoSQL — how do you choose for a given feature?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer — decide by data shape, consistency needs, and access patterns, not fashion:</strong></p>
+<ul>
+<li><strong>Relational (Postgres/MySQL):</strong> default choice. Relationships + joins, transactions across entities (payments, orders), ad-hoc queries, strong consistency. Postgres JSONB covers most "flexible schema" needs anyway.</li>
+<li><strong>Document (MongoDB):</strong> self-contained aggregates read/written as a unit, heterogeneous schemas per record.</li>
+<li><strong>Key-value/cache (Redis):</strong> sessions, rate limit counters, leaderboards, pub/sub, hot caching.</li>
+<li><strong>Wide-column (Cassandra) / time-series (Timescale, ClickHouse):</strong> huge write volumes, known query patterns — e.g. market tick/candle data for charting.</li>
+<li><strong>Search (Elasticsearch):</strong> full-text, faceting.</li>
+</ul>
+<p>Senior framing: mention <strong>CAP/PACELC trade-offs</strong> (availability vs consistency under partition), that NoSQL "scales" because it drops joins/txns and forces query-first modeling (denormalized, duplicated data), and that polyglot persistence (SQL as source of truth + Redis cache + ES search) is the common real answer.</p>
+<p class="vn">Mặc định chọn SQL (Postgres) — join, transaction, truy vấn linh hoạt. NoSQL khi: aggregate độc lập (Mongo), cache/counter (Redis), ghi cực lớn theo pattern biết trước (Cassandra/time-series cho tick data), full-text (ES). Thực tế thường kết hợp.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>What is the N+1 query problem and how do you fix it?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<pre><code>// 1 query for posts + N queries for each author  ❌
+const posts = await Post.findAll();
+for (const p of posts) p.author = await User.findByPk(p.authorId);</code></pre>
+<p><strong>Fixes:</strong></p>
+<ul>
+<li><strong>JOIN / eager loading:</strong> <code>Post.findAll({ include: User })</code> (Sequelize), <code>relations</code> (TypeORM), <code>include</code> (Prisma) — 1 query.</li>
+<li><strong>Batch + map:</strong> collect ids, <code>WHERE id IN (…)</code>, stitch in memory — 2 queries. This is what <strong>DataLoader</strong> automates (batches all requests in one tick + per-request cache) — the standard fix in GraphQL resolvers where N+1 appears naturally.</li>
+</ul>
+<p>Senior signal: you <em>detect</em> it via ORM query logging / APM (dozens of identical queries per request), and you know the reverse trade-off — one mega-JOIN duplicating rows can be worse than two batched queries.</p>
+<p class="vn">1 query cha + N query con. Fix: JOIN/eager loading hoặc gom id vào <code>IN (…)</code> rồi map (DataLoader tự động hoá — chuẩn cho GraphQL). Phát hiện qua query log/APM.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Offset vs cursor (keyset) pagination — why does offset break at scale?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<div class="fig">
+<svg viewBox="0 0 680 175" xmlns="http://www.w3.org/2000/svg">
+  <text class="tb" x="170" y="20" text-anchor="middle">OFFSET 100000 LIMIT 20</text>
+  <rect class="bx2" x="30" y="35" width="280" height="30" rx="6"/>
+  <text class="ts" x="170" y="54" text-anchor="middle">scan &amp; discard 100,000 rows 😬</text>
+  <rect class="bx3" x="30" y="72" width="56" height="30" rx="6"/><text class="ts" x="58" y="91" text-anchor="middle">20 rows</text>
+  <text class="ts" x="170" y="125" text-anchor="middle">cost grows with page number;</text>
+  <text class="ts" x="170" y="140" text-anchor="middle">rows shift if data inserted between pages</text>
+  <text class="tb" x="510" y="20" text-anchor="middle">WHERE (ts, id) &lt; (cursor) LIMIT 20</text>
+  <rect class="bx3" x="380" y="35" width="90" height="30" rx="6"/><text class="ts" x="425" y="54" text-anchor="middle">index seek</text>
+  <rect class="bx3" x="480" y="35" width="56" height="30" rx="6"/><text class="ts" x="508" y="54" text-anchor="middle">20 rows</text>
+  <path class="ar" d="M472 50 H477"/>
+  <text class="ts" x="510" y="125" text-anchor="middle">O(log n) regardless of depth;</text>
+  <text class="ts" x="510" y="140" text-anchor="middle">stable under concurrent inserts</text>
+</svg>
+<div class="cap">Offset scans everything it skips; keyset seeks directly via the index.</div>
+</div>
+<p><strong>Model answer:</strong> <code>OFFSET n</code> must read and throw away n rows — page 5000 is massively slower than page 1, and concurrent inserts/deletes cause skipped or duplicated items. <strong>Keyset</strong> pagination filters on the last seen sort key (<code>WHERE (created_at, id) &lt; ($1, $2) ORDER BY created_at DESC, id DESC LIMIT 20</code>) — constant cost via index seek, stable results; the tuple with a unique tiebreaker (id) handles equal timestamps.</p>
+<p>Trade-offs: no "jump to page 37", requires an index matching the sort. Real-world: infinite scroll feeds, chart history loading (fetch older candles before timestamp X = exactly keyset pagination).</p>
+<p class="vn">OFFSET đọc-bỏ n dòng → càng sâu càng chậm, trang bị lệch khi có insert. Cursor/keyset: <code>WHERE (ts,id) &lt; cursor LIMIT 20</code> — seek theo index, chi phí không đổi. Load nến cũ của chart chính là keyset pagination.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Replication vs sharding: how do you scale a database, and what is replication lag?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<div class="fig">
+<svg viewBox="0 0 700 205" xmlns="http://www.w3.org/2000/svg">
+  <text class="tb" x="175" y="20" text-anchor="middle">Replication (scale reads / HA)</text>
+  <rect class="bx" x="110" y="35" width="130" height="40" rx="8"/><text class="tb" x="175" y="60" text-anchor="middle">Primary (writes)</text>
+  <rect class="bx3" x="25" y="130" width="120" height="40" rx="8"/><text class="tb" x="85" y="155" text-anchor="middle">Replica 1</text>
+  <rect class="bx3" x="205" y="130" width="120" height="40" rx="8"/><text class="tb" x="265" y="155" text-anchor="middle">Replica 2</text>
+  <path class="ar" d="M140 77 Q100 100 88 125"/><path class="ar" d="M212 77 Q250 100 262 125"/>
+  <text class="ts" x="175" y="110" text-anchor="middle">async WAL ship (lag!)</text>
+  <text class="ts" x="175" y="192" text-anchor="middle">reads →  replicas · writes → primary</text>
+  <text class="tb" x="530" y="20" text-anchor="middle">Sharding (scale writes / data size)</text>
+  <rect class="bx2" x="465" y="35" width="130" height="36" rx="8"/><text class="tb" x="530" y="58" text-anchor="middle">Router / hash(key)</text>
+  <rect class="bxg" x="395" y="130" width="90" height="40" rx="8"/><text class="tb" x="440" y="149" text-anchor="middle">Shard A</text><text class="ts" x="440" y="163" text-anchor="middle">users 0–33%</text>
+  <rect class="bxg" x="505" y="130" width="90" height="40" rx="8"/><text class="tb" x="550" y="149" text-anchor="middle">Shard B</text><text class="ts" x="550" y="163" text-anchor="middle">34–66%</text>
+  <rect class="bxg" x="615" y="130" width="80" height="40" rx="8"/><text class="tb" x="655" y="149" text-anchor="middle">Shard C</text><text class="ts" x="655" y="163" text-anchor="middle">67–100%</text>
+  <path class="ar" d="M495 73 Q450 100 442 125"/><path class="ar" d="M530 73 Q545 100 549 125"/><path class="ar" d="M567 73 Q630 100 651 125"/>
+</svg>
+<div class="cap">Replicate for reads and failover; shard when a single primary can't hold the writes or the data.</div>
+</div>
+<p><strong>Model answer:</strong> Scale in order: (1) optimize queries/indexes, (2) cache (Redis), (3) <strong>read replicas</strong> — async copies serving reads, plus failover; (4) <strong>sharding</strong> — horizontal partitioning by a shard key, last resort because cross-shard joins/transactions and resharding are painful.</p>
+<p><strong>Replication lag</strong> = replica is seconds behind primary → user writes then reads a replica and sees stale data. Mitigations: <strong>read-your-own-writes</strong> (route the writer's next reads to primary / sticky session), monotonic reads, or accept eventual consistency per use case. Shard key criteria: even distribution (avoid hot spots — e.g. celebrity users), aligns with query patterns to keep queries single-shard.</p>
+<p class="vn">Thứ tự scale: index/query → cache → read replica → shard (cuối cùng vì join/txn xuyên shard rất khổ). Lag: ghi xong đọc replica thấy data cũ → route đọc-sau-ghi về primary. Shard key phải phân bố đều + khớp query pattern.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Why is connection pooling critical in Node? How do you size the pool?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> A DB connection costs a TCP+TLS handshake, auth, and a backend process/thread (Postgres: one process per connection, each holding memory). Opening one per request destroys latency and can exhaust the DB. A pool keeps N warm connections; requests borrow → query → release.</p>
+<ul>
+<li>Node specifics: one process handles thousands of concurrent requests over a pool of ~10 connections — requests <em>queue</em> for a free connection. Under-sized pool → queue timeouts under load; oversized → you DDoS your own DB (Postgres <code>max_connections</code> is small, ~100 default).</li>
+<li><strong>Sizing:</strong> total = pool_size × process_count × service_instances ≤ DB max. A good starting heuristic: connections ≈ (cores × 2) + effective_spindle_count on the DB side; measure pool wait time and tune. Use PgBouncer when many instances share one DB.</li>
+<li>Pitfalls: leaking connections by not releasing on error paths (use <code>finally</code>), long transactions hogging the pool, running migrations through the pooled app user.</li>
+</ul>
+<p class="vn">Mở connection mỗi request = handshake + process DB mới → chết latency. Pool ~10 conn phục vụ ngàn request (xếp hàng). Tổng conn mọi instance phải ≤ max của DB; nhiều instance → PgBouncer. Luôn release trong <code>finally</code>.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>A query is slow in production. Walk me through your optimization process (EXPLAIN, normalization trade-offs).<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<ol>
+<li><strong>Identify:</strong> slow-query log / <code>pg_stat_statements</code> / APM — find the worst total-time offenders, not just worst single query.</li>
+<li><strong>Explain:</strong> <code>EXPLAIN (ANALYZE, BUFFERS)</code> — read the plan: Seq Scan on a big table where an Index Scan was expected? Row-estimate wildly off (→ <code>ANALYZE</code> to refresh stats)? Nested Loop exploding? Sort spilling to disk (<code>work_mem</code>)?</li>
+<li><strong>Fix in order of cheapness:</strong> add/adjust index (composite order, covering index, partial index for hot subsets), rewrite the query (avoid functions on indexed columns, <code>EXISTS</code> vs <code>IN</code>, remove <code>SELECT *</code>), then schema-level: <strong>denormalize deliberately</strong> — cached counters, materialized views, pre-aggregated tables (e.g. 1-minute candles instead of raw ticks) — accepting update complexity for read speed.</li>
+<li><strong>Beyond the DB:</strong> cache the result (Redis with TTL/invalidation), paginate with keyset, batch N+1s.</li>
+<li><strong>Verify:</strong> re-EXPLAIN, compare p95 latency, watch write amplification from new indexes.</li>
+</ol>
+<p>Normalization stance: normalize by default (3NF — no update anomalies), denormalize <em>measured hot paths</em> only, with a mechanism keeping copies consistent (triggers, app logic, or scheduled refresh).</p>
+<p class="vn">Quy trình: tìm qua slow log/pg_stat_statements → <code>EXPLAIN ANALYZE</code> đọc plan (seq scan? estimate sai? sort tràn disk?) → fix rẻ trước: index/viết lại query → đắt sau: denormalize có chủ đích (materialized view, bảng pre-aggregate) → đo lại.</p>
+</div>
+</details>
+</section>
+<section id="sec-design">
+<h2>7 · System Design &amp; Architecture</h2>
+<p class="sec-desc">Expect at least one design round — the charting/streaming background makes real-time systems the likely prompt.</p>
+
+<details class="q">
+<summary>Design a real-time financial charting system (like Naver Pay's). WebSocket vs SSE vs polling?<span class="badges"><span class="badge b-senior">Senior · CV</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Framework: clarify requirements → transport → data model → scale → client.</strong></p>
+<table>
+<tr><th></th><th>Short polling</th><th>SSE</th><th>WebSocket</th></tr>
+<tr><td>Direction</td><td>client pull</td><td>server → client only</td><td>bidirectional</td></tr>
+<tr><td>Latency</td><td>poll interval</td><td>real-time</td><td>real-time</td></tr>
+<tr><td>Pros</td><td>dead simple, cacheable</td><td>plain HTTP, auto-reconnect + Last-Event-ID built in</td><td>lowest overhead, subscribe/unsubscribe messages</td></tr>
+<tr><td>Fit</td><td>slow data (1min+)</td><td>tickers, notifications</td><td><strong>interactive charts</strong> (symbol switching), trading</td></tr>
+</table>
+<div class="fig">
+<svg viewBox="0 0 720 150" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bx2" x="10" y="50" width="105" height="46" rx="8"/><text class="tb" x="62" y="70" text-anchor="middle">Exchange /</text><text class="tb" x="62" y="84" text-anchor="middle">market feed</text>
+  <rect class="bx" x="150" y="50" width="110" height="46" rx="8"/><text class="tb" x="205" y="70" text-anchor="middle">Ingest</text><text class="ts" x="205" y="84" text-anchor="middle">normalize ticks</text>
+  <rect class="bx" x="295" y="50" width="115" height="46" rx="8"/><text class="tb" x="352" y="70" text-anchor="middle">Kafka / Redis</text><text class="ts" x="352" y="84" text-anchor="middle">pub-sub per symbol</text>
+  <rect class="bx" x="445" y="50" width="120" height="46" rx="8"/><text class="tb" x="505" y="70" text-anchor="middle">WS gateway ×N</text><text class="ts" x="505" y="84" text-anchor="middle">fan-out, throttle</text>
+  <rect class="bx3" x="600" y="50" width="110" height="46" rx="8"/><text class="tb" x="655" y="70" text-anchor="middle">Client chart</text><text class="ts" x="655" y="84" text-anchor="middle">rAF batch draw</text>
+  <path class="ar" d="M117 73 H145"/><path class="ar" d="M262 73 H290"/><path class="ar" d="M412 73 H440"/><path class="ar" d="M567 73 H595"/>
+  <rect class="bxg" x="295" y="112" width="115" height="30" rx="6"/><text class="ts" x="352" y="131" text-anchor="middle">candle aggregator → TSDB</text>
+  <path class="ar" d="M352 98 V108"/>
+  <text class="ts" x="655" y="120" text-anchor="middle">history via REST</text>
+  <text class="ts" x="655" y="133" text-anchor="middle">(keyset, CDN-cacheable)</text>
+</svg>
+<div class="cap">Ingest → pub/sub → stateless WS gateways fan out; history served separately over cacheable REST.</div>
+</div>
+<p><strong>Key design points to hit:</strong></p>
+<ul>
+<li><strong>Two paths:</strong> hot path (live ticks over WS/SSE) + cold path (historical candles via REST — keyset paginated by timestamp, CDN-cacheable since closed candles are immutable).</li>
+<li><strong>Aggregation:</strong> store raw ticks briefly, pre-aggregate OHLCV candles (1m→5m→1d) in a time-series DB; clients get the resolution they can display.</li>
+<li><strong>Fan-out scale:</strong> stateless gateway nodes each subscribed to the broker; sticky by connection; server-side <strong>throttling/conflation</strong> (send latest state ~4×/s, not every tick — the screen can't show more).</li>
+<li><strong>Client:</strong> reconnect with backoff + resume from last timestamp (gap fill from REST), buffer ticks and draw once per rAF, downsample to viewport.</li>
+<li>Mention graceful degradation: WS blocked by some proxies → SSE/long-poll fallback.</li>
+</ul>
+<p class="vn">2 đường: live (WS, throttle/conflate ~4 lần/s) + lịch sử (REST keyset, cache CDN vì nến đã đóng bất biến). Pre-aggregate OHLCV nhiều độ phân giải. Gateway stateless + pub/sub để fan-out. Client: reconnect + gap-fill, vẽ theo rAF.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Design a multi-layer caching strategy for a fullstack app — and how do you handle invalidation?<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<p><strong>Model answer — cache at every layer, each with a reason:</strong></p>
+<ol>
+<li><strong>Browser:</strong> immutable hashed assets (1y), SWR for API data via React Query (<code>staleTime</code>).</li>
+<li><strong>CDN (CloudFront):</strong> static assets + cacheable API GETs (<code>s-maxage</code>, vary carefully); <code>stale-while-revalidate</code> for zero-latency refresh.</li>
+<li><strong>App layer (Redis):</strong> hot query results, sessions, computed aggregates. Pattern: <strong>cache-aside</strong> (read: try cache → miss: DB → set with TTL; write: update DB → <em>delete</em> key, don't set — avoids races). Alternatives: write-through, write-behind.</li>
+<li><strong>DB:</strong> materialized views, buffer pool (free — keep working set in RAM).</li>
+</ol>
+<p><strong>Invalidation strategies:</strong> TTL (simplest, accept bounded staleness), explicit delete-on-write, event-driven (CDC/pub-sub fanning out invalidations), versioned keys (<code>user:42:v7</code> — bump version instead of deleting). Problems to name: <strong>cache stampede</strong> (hot key expires → thundering herd; fix: lock/single-flight, jittered TTLs, early refresh), <strong>hot keys</strong>, cache penetration (cache negative results briefly).</p>
+<p class="vn">Tầng nào cũng cache: browser (immutable asset) → CDN (<code>s-maxage</code>) → Redis (cache-aside: write thì DELETE key chứ đừng SET) → DB (materialized view). Chống stampede: single-flight + TTL jitter. Key có version để "invalidate" bằng cách bump.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Design rate limiting for a public API. Compare algorithms and describe a distributed implementation.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<ul>
+<li><strong>Fixed window:</strong> counter per window — simple, but 2× bursts at boundaries.</li>
+<li><strong>Sliding window (log/counter):</strong> accurate; log = memory-heavy, counter approximation is the practical middle ground.</li>
+<li><strong>Token bucket:</strong> refill R tokens/s, burst up to bucket size B — allows natural bursts with a controlled average; the most common choice (and what AWS uses).</li>
+<li><strong>Leaky bucket:</strong> constant outflow — smooths traffic, adds queuing delay.</li>
+</ul>
+<p><strong>Distributed:</strong> counters must be shared → Redis with atomic <strong>Lua script</strong> (read-refill-consume in one step; avoids race between GET/SET), keyed per user/API-key/IP with per-plan limits. Return <code>429</code> + <code>Retry-After</code> and <code>X-RateLimit-Remaining</code> headers. Place at the gateway/middleware before expensive work. Nuances: fail-open vs fail-closed when Redis is down, separate limits per endpoint class (auth endpoints stricter), local in-memory pre-filter to shed obvious floods cheaply.</p>
+<p class="vn">Token bucket là lựa chọn phổ biến (cho phép burst, kiểm soát trung bình). Phân tán: Redis + Lua script nguyên tử, key theo user/IP. Trả 429 + Retry-After. Quyết định fail-open/fail-closed khi Redis chết.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Explain Clean Architecture. How did it shape your NestJS services, and when is it overkill?<span class="badges"><span class="badge b-senior">Senior · CV</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<div class="fig">
+<svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="230" cy="120" r="105" fill="#eef0ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <circle cx="230" cy="120" r="72" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <circle cx="230" cy="120" r="40" fill="#c7d2fe" stroke="#4f46e5" stroke-width="1.5"/>
+  <text class="tb" x="230" y="117" text-anchor="middle">Entities</text>
+  <text class="ts" x="230" y="131" text-anchor="middle">domain rules</text>
+  <text class="tb" x="230" y="66" text-anchor="middle">Use cases</text>
+  <text class="tb" x="230" y="33" text-anchor="middle">Adapters · controllers · gateways</text>
+  <text class="ts" x="230" y="228" text-anchor="middle">frameworks · DB · UI (outermost)</text>
+  <path class="ar" d="M440 60 Q380 80 330 100"/>
+  <text class="t" x="475" y="50">Dependency Rule:</text>
+  <text class="ts" x="475" y="68">source deps point INWARD only.</text>
+  <text class="ts" x="475" y="86">Inner layers know nothing of</text>
+  <text class="ts" x="475" y="104">Express/Nest/Postgres.</text>
+  <text class="ts" x="475" y="134">DB &amp; framework = detail,</text>
+  <text class="ts" x="475" y="152">swappable behind interfaces</text>
+  <text class="ts" x="475" y="170">(ports); DI wires implementations.</text>
+</svg>
+<div class="cap">The Dependency Rule: business logic at the center, frameworks at the edge.</div>
+</div>
+<p><strong>Model answer:</strong> Layers — entities (domain rules) → use cases (application logic) → interface adapters (controllers, repositories) → frameworks/drivers. The only rule that matters: <strong>dependencies point inward</strong>; inner layers define <em>interfaces</em> (ports) that outer layers implement (adapters). NestJS fits naturally: modules per bounded context, use-case services depend on repository <em>interfaces</em>, DI injects the TypeORM/Prisma implementation; controllers are thin translators.</p>
+<p>Benefits to cite from experience: unit-test use cases with in-memory fakes (no DB), swapped data sources without touching business logic, parallel team work along boundaries. <strong>Overkill when:</strong> CRUD-only services — the ceremony (DTO↔entity mapping everywhere) slows you down; a pragmatic middle (controller → service → repository, skip pure-domain entities) often suffices. Senior signal is knowing the dial, not the dogma.</p>
+<p class="vn">Quy tắc duy nhất: dependency chỉ hướng vào trong; business logic không biết framework/DB. Inner định nghĩa interface, outer implement (DI của Nest). Test use-case bằng fake in-memory. Service CRUD đơn giản thì đừng áp full — biết điều chỉnh mới là senior.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>You built an SDK used by 8 products. How do you design its API surface, versioning, and releases?<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Expected talking points (your ChartIQ SDK story):</strong></p>
+<ul>
+<li><strong>API surface:</strong> small and intentional — options object with defaults, events out / methods in, hide the wrapped engine (ChartIQ) behind your own types so products never couple to it; make invalid configurations unrepresentable via TS types (discriminated unions per chart type).</li>
+<li><strong>Compatibility:</strong> <strong>SemVer</strong> discipline — breaking = major; additive = minor. Deprecate with JSDoc <code>@deprecated</code> + console warnings one major ahead; provide codemods/migration guides for majors.</li>
+<li><strong>Release pipeline (CV keywords):</strong> <strong>Changesets</strong> — each PR declares its bump + changelog entry; CI aggregates to versioned releases. Automated publish on merge; Storybook (Docker-published) as living docs + visual regression; canary/prerelease tags (<code>next</code>) so one product can validate before the fleet upgrades.</li>
+<li><strong>Quality gates:</strong> public-API type tests (<code>tsd</code> or API extractor reports — diff on the <code>.d.ts</code> surface), unit + visual tests, bundle-size budget on CI.</li>
+<li><strong>Consumer support:</strong> peer-dependency ranges, dual ESM/CJS via <code>exports</code> map, no breaking transitive deps.</li>
+</ul>
+<p class="vn">SDK cho 8 sản phẩm: API nhỏ và chủ đích, giấu ChartIQ sau type riêng. SemVer + deprecate trước 1 major. Changesets tự động version/changelog, tag <code>next</code> cho canary. Gate CI: diff <code>.d.ts</code>, visual regression, bundle budget.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How would you design a stateless, horizontally scalable API on AWS? (ALB, Auto Scaling, sessions)<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Model answer (AWS SAA-aligned):</strong> Route 53 → CloudFront (static + API edge caching) → <strong>ALB</strong> across ≥2 AZs → <strong>Auto Scaling Group</strong> (or ECS/Fargate services) scaling on request count/CPU/custom latency metrics → data tier: RDS Multi-AZ + read replicas, ElastiCache Redis, S3 for objects.</p>
+<ul>
+<li><strong>Statelessness is the precondition:</strong> no in-memory sessions or local files. Sessions → Redis or signed JWTs; uploads → S3 (presigned URLs); WebSocket state → sticky sessions only if unavoidable, better external pub/sub.</li>
+<li><strong>Scaling policies:</strong> target tracking (e.g. 60% CPU or ALB RequestCountPerTarget), warm-up time, min/max bounds; scale-in protection for long jobs — move them to SQS + worker pool instead.</li>
+<li><strong>Health &amp; deploys:</strong> ALB health checks (deep enough to catch dead DB pools, shallow enough to avoid cascading failures), rolling/blue-green deploys, graceful SIGTERM handling (ties back to Node shutdown).</li>
+<li><strong>Resilience:</strong> multi-AZ everywhere, timeouts + retries with backoff + circuit breakers between services, CloudWatch alarms on p99 + error rate.</li>
+</ul>
+<p class="vn">CloudFront → ALB (≥2 AZ) → ASG/Fargate → RDS Multi-AZ + Redis + S3. Điều kiện tiên quyết: app stateless (session vào Redis/JWT, file vào S3). Scale theo target tracking; job dài → SQS + worker. Health check + graceful shutdown cho deploy không downtime.</p>
+</div>
+</details>
+</section>
+
+<section id="sec-ai">
+<h2>8 · AI / LLM Tooling</h2>
+<p class="sec-desc">The CV's differentiator — expect deep dives on RAG, MCP, and agents. Own these answers.</p>
+
+<details class="q">
+<summary>Explain RAG architecture end-to-end. How do you make retrieval actually good?<span class="badges"><span class="badge b-senior">Senior · CV</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<div class="fig">
+<svg viewBox="0 0 720 210" xmlns="http://www.w3.org/2000/svg">
+  <text class="tb" x="150" y="20" text-anchor="middle">Indexing (offline)</text>
+  <rect class="bx2" x="15" y="35" width="90" height="40" rx="8"/><text class="tb" x="60" y="53" text-anchor="middle">Docs / PRs</text><text class="ts" x="60" y="67" text-anchor="middle">source data</text>
+  <rect class="bx2" x="130" y="35" width="80" height="40" rx="8"/><text class="tb" x="170" y="53" text-anchor="middle">Chunk</text><text class="ts" x="170" y="67" text-anchor="middle">+ metadata</text>
+  <rect class="bx2" x="235" y="35" width="80" height="40" rx="8"/><text class="tb" x="275" y="53" text-anchor="middle">Embed</text><text class="ts" x="275" y="67" text-anchor="middle">vectors</text>
+  <rect class="bx2" x="340" y="35" width="90" height="40" rx="8"/><text class="tb" x="385" y="53" text-anchor="middle">Vector DB</text><text class="ts" x="385" y="67" text-anchor="middle">+ keyword index</text>
+  <path class="ar" d="M107 55 H125"/><path class="ar" d="M212 55 H230"/><path class="ar" d="M317 55 H335"/>
+  <text class="tb" x="150" y="115" text-anchor="middle">Query time (online)</text>
+  <rect class="bx" x="15" y="130" width="90" height="40" rx="8"/><text class="tb" x="60" y="153" text-anchor="middle">Query</text>
+  <rect class="bx" x="130" y="130" width="100" height="40" rx="8"/><text class="tb" x="180" y="148" text-anchor="middle">Hybrid search</text><text class="ts" x="180" y="162" text-anchor="middle">vector + BM25</text>
+  <rect class="bx" x="255" y="130" width="80" height="40" rx="8"/><text class="tb" x="295" y="148" text-anchor="middle">Rerank</text><text class="ts" x="295" y="162" text-anchor="middle">top-k</text>
+  <rect class="bx3" x="360" y="130" width="130" height="40" rx="8"/><text class="tb" x="425" y="148" text-anchor="middle">LLM + context</text><text class="ts" x="425" y="162" text-anchor="middle">prompt: query + chunks</text>
+  <rect class="bx3" x="515" y="130" width="90" height="40" rx="8"/><text class="tb" x="560" y="148" text-anchor="middle">Answer</text><text class="ts" x="560" y="162" text-anchor="middle">+ citations</text>
+  <path class="ar" d="M107 150 H125"/><path class="ar" d="M232 150 H250"/><path class="ar" d="M337 150 H355"/><path class="ar" d="M492 150 H510"/>
+  <path class="ar" d="M385 77 Q385 110 220 133"/>
+</svg>
+<div class="cap">Two pipelines: offline indexing; online retrieve → rerank → generate with citations.</div>
+</div>
+<p><strong>Model answer:</strong> RAG grounds the LLM in external knowledge: index documents as embedded chunks; at query time retrieve relevant chunks and stuff them into the prompt. Solves stale knowledge, private data, and reduces hallucination (with citations).</p>
+<p><strong>What makes retrieval good (senior depth):</strong></p>
+<ul>
+<li><strong>Chunking:</strong> semantic boundaries (functions, sections) beat fixed windows; overlap for continuity; attach metadata (file path, author, date) for filtering. For code/PRs: chunk by diff hunk + link the PR description.</li>
+<li><strong>Hybrid search:</strong> embeddings miss exact identifiers (error codes, function names) — combine with BM25/keyword and fuse (RRF).</li>
+<li><strong>Reranking:</strong> retrieve top-50 cheap, rerank to top-5 with a cross-encoder; query rewriting (HyDE, multi-query) for vague questions.</li>
+<li><strong>Evaluation:</strong> golden question→chunk sets, measure recall@k / MRR — and answer faithfulness separately. Retrieval quality, not the LLM, is usually the bottleneck.</li>
+</ul>
+<p class="vn">2 pipeline: index (chunk theo ngữ nghĩa + metadata → embed → vector DB) và query (hybrid vector+BM25 → rerank → nhét vào prompt + citation). Nghẽn thường ở retrieval, không phải LLM — đo recall@k bằng bộ golden set.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>What is MCP (Model Context Protocol) and what problem does it solve? You built a Jira MCP server — describe it.<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> MCP is an open protocol (Anthropic, 2024; JSON-RPC based) standardizing how LLM apps connect to external tools and data. It solves the <strong>M×N integration problem</strong>: without it, every AI app writes bespoke integrations for every tool; with it, one <strong>MCP server</strong> per system (Jira, GitHub, DB) works with any <strong>MCP client</strong> (Claude, IDEs, custom agents).</p>
+<ul>
+<li><strong>Primitives:</strong> <strong>tools</strong> (model-invoked actions, e.g. <code>search_issues</code>), <strong>resources</strong> (readable data/context), <strong>prompts</strong> (reusable templates). Transports: stdio (local) or streamable HTTP (remote).</li>
+<li><strong>Your Jira server story:</strong> exposed curated tools (search by JQL, get issue, create/comment, transition) with tight input schemas; flattened Jira's sprawling REST responses into token-efficient summaries; handled auth per user; wrote tool descriptions carefully — <em>the description is the prompt</em>, it determines whether the model picks the right tool.</li>
+<li><strong>Design lessons to mention:</strong> few good tools beat many thin API wrappers; return errors the model can act on ("sprint not found; available sprints: …"); pagination and token budgets matter; least-privilege scopes for write actions.</li>
+</ul>
+<p class="vn">MCP chuẩn hoá kết nối LLM ↔ tool (giải bài toán M×N): 1 server (Jira) dùng được cho mọi client. Primitives: tools/resources/prompts. Kinh nghiệm: ít tool nhưng mô tả kỹ (description chính là prompt), response gọn token, error để model tự sửa.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How does LLM tool/function calling actually work? How did you design the Slack agent to be reliable?<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Mechanics:</strong> you send the model a list of tool schemas (name, description, JSON Schema params). The model doesn't execute anything — it emits a structured "call X with args Y"; <em>your code</em> validates, executes, and returns the result as a new message; the model continues. An <strong>agent</strong> is this loop until the model answers instead of calling.</p>
+<p><strong>Reliability engineering (your Slack agent, Vercel AI SDK / HyperClovaX provider):</strong></p>
+<ul>
+<li><strong>Validate every call</strong> against schema (zod) — models produce wrong/missing args; return the validation error to the model so it retries correctly.</li>
+<li><strong>Bound the loop:</strong> max steps, timeouts per tool, overall budget; idempotency or explicit user confirmation for destructive actions (create/transition Jira issues).</li>
+<li><strong>Tool design &gt; prompt tricks:</strong> unambiguous names, examples in descriptions, small orthogonal tools; return structured, compact results.</li>
+<li><strong>Custom provider:</strong> the Vercel AI SDK abstracts providers behind one interface (generateText/streamText, tool schemas) — you implemented the HyperClovaX adapter: mapping message formats, tool-call conventions, streaming chunks, and normalizing finish reasons.</li>
+<li><strong>Observability:</strong> log full conversations + tool traces, replayable failures, eval set of real user asks.</li>
+</ul>
+<p class="vn">Model chỉ <em>phát</em> lệnh gọi tool dạng JSON — code của bạn validate (zod), thực thi, trả kết quả lại vào loop. Reliability: giới hạn số bước, confirm hành động phá hoại, tool ít mà mô tả rõ, log/eval toàn bộ trace. Custom provider = adapter format message/stream cho HyperClovaX.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Your AI PR review bot: how does RAG-driven "historical context" work, and how do you measure the bot is useful?<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Architecture story to tell:</strong> GitHub App receives PR webhooks → fetch diff → for each changed area, <strong>retrieve historical context</strong>: embeddings of past PRs/diff hunks/review comments in the same files or symbols, plus co-change history (files that historically change together). The prompt then contains: the diff, related past changes ("this function was refactored in PR #123 because…"), and team conventions — so suggestions reference precedent instead of reviewing the diff in isolation.</p>
+<ul>
+<li><strong>Practical details:</strong> chunk by hunk with file/symbol metadata; filter retrieval by path proximity + recency; token budget forces reranking; post as review comments with the cited PRs linked.</li>
+<li><strong>Guardrails:</strong> confidence thresholds (silence beats noise), never auto-approve/block, category limits (skip style nits if linters exist).</li>
+<li><strong>Measuring usefulness (the senior half):</strong> proxy metrics — comment <strong>resolution/adoption rate</strong> (was the suggestion applied?), 👍/👎 feedback, precision on a labeled sample (human review of N random comments), % PRs with at least one accepted suggestion, and downstream: escaped-defect rate on reviewed vs unreviewed paths. Iterate on the eval set before iterating on prompts.</li>
+</ul>
+<p class="vn">Webhook PR → lấy diff → retrieve PR/comment lịch sử cùng file/symbol (embedding + co-change) → prompt kèm tiền lệ. Đo hữu ích: tỷ lệ suggestion được áp dụng, 👍/👎, precision trên mẫu gắn nhãn — im lặng tốt hơn spam.</p>
+</div>
+</details>
+</section>
+<section id="sec-devops">
+<h2>9 · DevOps &amp; CI/CD</h2>
+<p class="sec-desc">Enough depth to defend the CV's Docker / GitHub Actions / CloudFront claims.</p>
+
+<details class="q">
+<summary>Docker: images vs containers, layers, and how do you write an efficient Dockerfile for a Node app?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> An image is an immutable stack of read-only layers (one per instruction); a container is a running instance with a thin writable layer on top. Layers are cached — order instructions from least to most frequently changing.</p>
+<pre><code># multi-stage: build deps don't ship to production
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci                      # cached unless lockfile changes
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine
+ENV NODE_ENV=production
+USER node                        # don't run as root
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package*.json ./
+RUN npm ci --omit=dev
+CMD ["node", "dist/main.js"]     # exec form → receives SIGTERM directly</code></pre>
+<p>Key points: copy lockfile before source (cache <code>npm ci</code>), multi-stage to drop devDeps/toolchain, small base image, <code>.dockerignore</code> (node_modules, .git), non-root user, exec-form CMD so the Node process gets signals for graceful shutdown (PID 1 caveat — or use <code>tini</code>).</p>
+<p class="vn">Image = các layer bất biến, container = instance + layer ghi. Copy lockfile trước source để cache npm ci; multi-stage bỏ devDeps; user non-root; CMD dạng exec để nhận SIGTERM (graceful shutdown).</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Design a CI/CD pipeline for a shared library/monorepo (GitHub Actions). What did your "shared Actions toolkit" solve?<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Pipeline stages:</strong> PR → lint + typecheck + unit tests (matrix per Node version) + build + visual regression (Storybook/Playwright), all with dependency caching (<code>actions/setup-node</code> cache, or Turborepo remote cache to only rebuild affected packages) → merge to main → <strong>Changesets</strong> opens/updates a release PR aggregating pending bumps → merging it publishes to the registry, tags, pushes Storybook image, and invalidates CDN.</p>
+<ul>
+<li><strong>Monorepo specifics:</strong> path filtering / affected-graph detection so unrelated packages don't rebuild; required checks per package.</li>
+<li><strong>Shared toolkit (your story):</strong> reusable workflows (<code>workflow_call</code>) and composite actions centralizing setup-node+cache, release, deploy steps — teams get consistent pipelines from a few lines, fixes roll out in one place; version the toolkit itself with tags.</li>
+<li><strong>Hygiene:</strong> OIDC to AWS instead of long-lived secrets, least-privilege <code>GITHUB_TOKEN</code> permissions, pinned action SHAs, concurrency groups to cancel superseded runs, branch protection + required reviews.</li>
+</ul>
+<p class="vn">PR: lint/typecheck/test/build/visual-regression (cache + affected-only). Main: Changesets tạo release PR → merge là publish + deploy + invalidate CDN. Toolkit chung = reusable workflow/composite action: team dùng vài dòng, sửa 1 chỗ. Bảo mật: OIDC, pin SHA, least privilege.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How do you deploy frontend assets to a CDN safely? (versioning, invalidation, rollback)<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> The core trick is <strong>immutable, content-hashed assets</strong>:</p>
+<ol>
+<li>Build produces <code>app.&lt;hash&gt;.js</code> — upload to S3 <em>first</em>, with <code>Cache-Control: public, max-age=31536000, immutable</code>. New files never conflict with old ones.</li>
+<li>Deploy the entry point (HTML or a manifest) <em>last</em>, with <code>no-cache</code> (revalidate every time) — flipping it atomically switches all users to the new asset graph.</li>
+<li>CloudFront invalidation only for the entry point (<code>/index.html</code>) — cheap and instant; hashed assets never need invalidation.</li>
+<li><strong>Rollback = re-point the entry file</strong> to the previous hashes (keep N old builds in the bucket) — seconds, no rebuild.</li>
+</ol>
+<p>Edge cases that show experience: users with an open SPA requesting old chunks after deploy (keep old assets available + handle chunk-load errors by prompting refresh); SDK-on-CDN consumers pinned to versioned URLs (<code>/sdk/1.4.2/</code>) plus a controlled <code>latest</code> alias; monitor error rates post-deploy before deleting anything.</p>
+<p class="vn">Asset có hash + <code>immutable</code> 1 năm, upload trước; HTML/manifest <code>no-cache</code> deploy sau cùng (chuyển version nguyên tử). Chỉ invalidate entry point. Rollback = trỏ lại hash cũ (giữ N bản build). SPA đang mở có thể request chunk cũ → giữ asset cũ + xử lý lỗi load chunk.</p>
+</div>
+</details>
+</section>
+
+<section id="sec-cv">
+<h2>10 · CV Deep-dive &amp; Behavioral</h2>
+<p class="sec-desc">Interviewers will drill into these lines of the CV. Prepare STAR stories with numbers.</p>
+
+<details class="q">
+<summary>"Retired ~14K lines of legacy code and resolved long-standing rendering defects" — walk me through one defect end-to-end.<span class="badges"><span class="badge b-senior">Story</span></span></summary>
+<div class="answer">
+<p><strong>How to answer (STAR + debugging craft):</strong> pick ONE concrete defect and show a systematic method:</p>
+<ol>
+<li><strong>Situation:</strong> the symptom, its blast radius (which of the 8 products, how many users/reports), why it was "long-standing" (intermittent? legacy code nobody understood?).</li>
+<li><strong>Task:</strong> owned reproduction and fix during the TS migration.</li>
+<li><strong>Action — the debugging narrative interviewers want:</strong> made it reproducible (specific data/timing, e.g. ticks arriving during a resize), isolated with a minimal repro, bisected between chart engine vs wrapper, used DevTools Performance panel / breakpoints on rAF callbacks; root cause examples: race between async data and destroyed chart instance, double event binding after re-init, float rounding in scale computation. Explain how <em>typing</em> the code surfaced the wrong assumption.</li>
+<li><strong>Result:</strong> defect gone across products, regression test/visual snapshot added so it can't return, plus the class of bug eliminated by types.</li>
+</ol>
+<p>Have numbers ready: LOC deleted, defects closed, % strictness reached, migration duration, zero production incidents during migration (if true).</p>
+<p class="vn">Chọn 1 bug cụ thể, kể theo STAR: tái hiện được bug → thu nhỏ repro → bisect engine vs wrapper → root cause (race async/destroy, double-bind, làm tròn số) → fix + visual regression test. Chuẩn bị số liệu: LOC, số defect, thời gian, 0 sự cố.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Why wrap ChartIQ in your own SDK instead of letting each product use it directly? Defend the architecture.<span class="badges"><span class="badge b-senior">Story</span></span></summary>
+<div class="answer">
+<p><strong>Expected reasoning (this tests architectural judgment):</strong></p>
+<ul>
+<li><strong>Consistency:</strong> 8 products, one visual language and behavior; fixes and features land once, propagate everywhere via versioned releases.</li>
+<li><strong>Abstraction boundary:</strong> products depend on <em>your</em> stable, typed API — not on ChartIQ's; upgrades of the vendor (breaking changes, licensing shifts) become an SDK-internal concern; the door stays open to swap the engine.</li>
+<li><strong>Guardrails:</strong> the SDK encodes correct usage (lifecycle, data feeding, disposal) that raw ChartIQ leaves to each team — the source of past defects.</li>
+<li><strong>Cost acknowledged (senior = sees both sides):</strong> the wrapper is a bottleneck team, lowest-common-denominator API risk, "SDK doesn't support X" escalations, and abstraction leaks for advanced needs. Mitigations: escape hatches (typed access to the underlying instance), product-team contribution model, fast release cadence via Changesets.</li>
+</ul>
+<p>Strong close: a metric — e.g. "a rendering fix that previously required 8 separate patches now ships in one release."</p>
+<p class="vn">Lý do: 8 sản phẩm đồng nhất, fix 1 lần lan toả; cô lập vendor (nâng cấp/đổi engine không ảnh hưởng product); SDK ép dùng đúng lifecycle. Thừa nhận chi phí: đội wrapper thành bottleneck → escape hatch + release nhanh. Kết bằng số liệu.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Your Slack agent "replaces manual engineering workflows" — which workflow, and how do you know it worked?<span class="badges"><span class="badge b-senior">Story</span></span></summary>
+<div class="answer">
+<p><strong>Structure the answer around one workflow, before/after:</strong></p>
+<ol>
+<li><strong>Before:</strong> e.g. engineers manually cross-referencing Jira tickets, Naver Works threads, and release notes to answer "what's the status of X?" or filing routine tickets — minutes of context-switching, many times a day.</li>
+<li><strong>After:</strong> ask the Slack bot in-thread; the agent tool-calls Jira MCP + Naver Works, synthesizes, answers with links; can create/update tickets with confirmation.</li>
+<li><strong>Adoption evidence (the part that separates senior candidates):</strong> weekly active users, queries/day, task-completion rate (agent answered without human fallback), time saved estimate, and qualitative pull — other teams asking to onboard. Be honest about failure modes you fixed: hallucinated ticket IDs → forced tool-grounding; ambiguous asks → clarifying-question step.</li>
+</ol>
+<p>Likely follow-ups: how you handle auth/permissions per user (the bot must not leak tickets the asker can't see), prompt-injection from ticket content, and cost control per query (caching, small-model routing).</p>
+<p class="vn">Kể 1 workflow cụ thể: trước (tra tay Jira/Naver Works, tốn phút mỗi lần) → sau (hỏi bot, agent tool-call + trả link, tạo ticket có confirm). Bằng chứng: WAU, số query/ngày, tỷ lệ hoàn thành không cần người. Chuẩn bị câu hỏi phụ: phân quyền theo user, prompt injection, chi phí.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Tell me about a time you disagreed with a technical decision. / How do you handle production incidents?<span class="badges"><span class="badge b-mid">Behavioral</span></span></summary>
+<div class="answer">
+<p><strong>Disagreement template:</strong> pick a real case (e.g. big-bang rewrite vs incremental migration; adopting a heavy framework for a small service). Show: you argued with <em>data</em> (prototype, benchmark, risk list), sought the other side's constraints, committed fully once decided ("disagree and commit"), and circled back with results. Avoid stories where you were simply right and others wrong — show you updated your view at least partially.</p>
+<p><strong>Incident template (SEV story):</strong> detection (alert vs user report — be honest) → triage: <strong>mitigate first, root-cause later</strong> (rollback/feature-flag off) → communicate status to stakeholders at intervals → root cause with evidence (logs, metrics, bisect the deploy) → blameless postmortem → prevention: the missing alarm/test/guardrail you added. Emphasize calm sequencing and communication over heroics.</p>
+<p><strong>Other behavioral questions to prep for this CV:</strong> mentoring juniors during the TS migration; pushing back on scope while owning the release pipeline solo; how you learned LLM engineering fast; why you moved Nexon → Naver; what "senior" means to you (impact through others, owning outcomes not tasks).</p>
+<p class="vn">Bất đồng: tranh luận bằng số liệu/prototype, hiểu ràng buộc phía kia, quyết rồi thì commit, sau đó review lại. Sự cố: giảm thiểu trước (rollback/flag) → giao tiếp đều → root cause → postmortem không đổ lỗi → thêm alarm/test phòng ngừa.</p>
+</div>
+</details>
+</section>
+</main>
+
+<footer>
+  Prepared for senior fullstack (JavaScript) interviews · Answers are model answers — personalize with your own project stories. · Generated July 2026
+</footer>
+
+<script>
+(function(){
+  const qs = Array.from(document.querySelectorAll('details.q'));
+  const sections = Array.from(document.querySelectorAll('main section'));
+  const count = document.getElementById('count');
+  const total = qs.length;
+  function updateCount(visible){ count.textContent = visible + ' / ' + total + ' questions'; }
+  updateCount(total);
+
+  document.getElementById('expandAll').onclick = () => qs.forEach(d => { if(!d.classList.contains('hidden')) d.open = true; });
+  document.getElementById('collapseAll').onclick = () => qs.forEach(d => d.open = false);
+
+  const search = document.getElementById('search');
+  let t;
+  search.addEventListener('input', () => { clearTimeout(t); t = setTimeout(apply, 120); });
+  function apply(){
+    const term = search.value.trim().toLowerCase();
+    let visible = 0;
+    qs.forEach(d => {
+      const hit = !term || d.textContent.toLowerCase().includes(term);
+      d.classList.toggle('hidden', !hit);
+      if(hit) visible++;
+      if(term && hit) d.open = true;
+      if(!term) d.open = false;
+    });
+    sections.forEach(s => {
+      const any = s.querySelectorAll('details.q:not(.hidden)').length > 0;
+      s.classList.toggle('hidden', !any);
+    });
+    updateCount(visible);
+  }
+})();
+</script>
+</body>
+</html>
