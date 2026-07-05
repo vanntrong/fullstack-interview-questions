@@ -1436,6 +1436,104 @@ CMD ["node", "dist/main.js"]     # exec form → receives SIGTERM directly</code
 </details>
 
 <details class="q">
+<summary>Containers vs VMs — what actually isolates a Docker container under the hood?<span class="badges"><span class="badge b-senior">Senior</span><span class="badge b-diag">📊 diagram</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> A container is <em>not</em> a lightweight VM — it's an ordinary Linux <strong>process</strong> wearing isolation glasses. Three kernel features do all the work:</p>
+<ul>
+<li><strong>Namespaces</strong> — what the process can <em>see</em>: its own PID tree (PID ns), network stack/interfaces (net ns), filesystem root (mount ns), hostname (UTS), users (user ns), IPC.</li>
+<li><strong>cgroups</strong> — what it can <em>use</em>: CPU, memory, I/O limits (this is what <code>--memory=512m</code> sets; exceed it → OOM-killed).</li>
+<li><strong>Union/overlay filesystem</strong> — image layers stacked read-only + one writable layer on top; layers are shared between containers, which is why 10 containers from one image cost almost nothing extra on disk.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg">
+  <text class="tb" x="175" y="20" text-anchor="middle">Virtual Machines</text>
+  <rect class="bxg" x="30" y="160" width="290" height="32" rx="6"/><text class="tb" x="175" y="180" text-anchor="middle">Hardware</text>
+  <rect class="bxg" x="30" y="124" width="290" height="30" rx="6"/><text class="tb" x="175" y="143" text-anchor="middle">Host OS + Hypervisor</text>
+  <rect class="bx2" x="30" y="36" width="140" height="82" rx="8"/>
+  <text class="ts" x="100" y="56" text-anchor="middle">App A</text>
+  <text class="ts" x="100" y="74" text-anchor="middle">Libs</text>
+  <text class="tb" x="100" y="98" text-anchor="middle">Guest OS (GBs)</text>
+  <rect class="bx2" x="180" y="36" width="140" height="82" rx="8"/>
+  <text class="ts" x="250" y="56" text-anchor="middle">App B</text>
+  <text class="ts" x="250" y="74" text-anchor="middle">Libs</text>
+  <text class="tb" x="250" y="98" text-anchor="middle">Guest OS (GBs)</text>
+  <text class="tb" x="525" y="20" text-anchor="middle">Containers</text>
+  <rect class="bxg" x="380" y="160" width="290" height="32" rx="6"/><text class="tb" x="525" y="180" text-anchor="middle">Hardware</text>
+  <rect class="bxg" x="380" y="124" width="290" height="30" rx="6"/><text class="tb" x="525" y="143" text-anchor="middle">ONE shared Linux kernel + runtime</text>
+  <rect class="bx3" x="380" y="60" width="88" height="58" rx="8"/><text class="ts" x="424" y="84" text-anchor="middle">App A</text><text class="ts" x="424" y="100" text-anchor="middle">Libs (MBs)</text>
+  <rect class="bx3" x="481" y="60" width="88" height="58" rx="8"/><text class="ts" x="525" y="84" text-anchor="middle">App B</text><text class="ts" x="525" y="100" text-anchor="middle">Libs</text>
+  <rect class="bx3" x="582" y="60" width="88" height="58" rx="8"/><text class="ts" x="626" y="84" text-anchor="middle">App C</text><text class="ts" x="626" y="100" text-anchor="middle">Libs</text>
+  <text class="ts" x="525" y="48" text-anchor="middle">processes isolated by namespaces + cgroups</text>
+</svg>
+<div class="cap">VMs virtualize hardware and boot a full OS each; containers share the host kernel — start in ms, cost MBs.</div>
+</div>
+<p>Consequences worth stating: containers share the host kernel → weaker isolation boundary than a VM (why multi-tenant platforms run containers <em>inside</em> VMs); a container "boots" in milliseconds because nothing boots — it's just <code>fork+exec</code> with namespaces; Docker on Mac/Windows actually runs a hidden Linux VM.</p>
+<p class="vn">Container = process Linux bình thường + namespaces (thấy gì) + cgroups (dùng bao nhiêu) + overlay FS (layer chia sẻ). Chung kernel với host → nhẹ, khởi động ms, nhưng cách ly yếu hơn VM. Docker trên Mac chạy trong 1 VM Linux ẩn.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>How does Docker networking work? How do containers talk to each other in Compose?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> Docker network drivers: <strong>bridge</strong> (default — private virtual network on the host, containers get internal IPs, outbound via NAT), <strong>host</strong> (no isolation, container uses host's stack — no <code>-p</code> needed, Linux only), <strong>none</strong>, and <strong>overlay</strong> (multi-host, Swarm/K8s territory).</p>
+<ul>
+<li><code>-p 8080:3000</code> publishes container port 3000 on host 8080 — only needed for traffic <em>from outside</em>.</li>
+<li>On a <strong>user-defined bridge network</strong> (what Compose creates per project), containers reach each other by <strong>service name via built-in DNS</strong>: the API connects to <code>postgres:5432</code>, not <code>localhost:5432</code>. That's the #1 beginner bug — <code>localhost</code> inside a container is the container itself.</li>
+</ul>
+<pre><code># docker-compose.yml — typical Node fullstack dev setup
+services:
+  api:
+    build: .
+    ports: ["3000:3000"]          # exposed to the host for the browser
+    environment:
+      DATABASE_URL: postgres://user:pass@db:5432/app   # "db" = DNS name
+    depends_on:
+      db: { condition: service_healthy }               # wait for real readiness
+  db:
+    image: postgres:16
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U user"], interval: 2s }
+    volumes: [pgdata:/var/lib/postgresql/data]
+volumes:
+  pgdata:</code></pre>
+<p>Senior nuance: <code>depends_on</code> alone only orders <em>startup</em>, not readiness — use healthchecks (as above) or retry logic in the app, since the DB accepting TCP ≠ ready for queries.</p>
+<p class="vn">Bridge network riêng cho mỗi project Compose; container gọi nhau bằng <strong>tên service qua DNS nội bộ</strong> (<code>db:5432</code>), không phải <code>localhost</code>. <code>-p</code> chỉ cần cho traffic từ ngoài vào. <code>depends_on</code> chỉ đợi start, không đợi ready → thêm healthcheck.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Volumes vs bind mounts — how do you persist data, and what goes wrong with node_modules?<span class="badges"><span class="badge b-mid">Mid+</span></span></summary>
+<div class="answer">
+<p><strong>Model answer:</strong> A container's writable layer dies with the container. Options:</p>
+<ul>
+<li><strong>Named volume</strong> (<code>pgdata:/var/lib/postgresql/data</code>): Docker-managed storage, survives container recreation, portable across compose runs — the right choice for databases and anything stateful.</li>
+<li><strong>Bind mount</strong> (<code>./src:/app/src</code>): maps a host directory in — the dev-mode tool for hot reload; the container sees your edits instantly.</li>
+<li><strong>tmpfs</strong>: RAM-only, for secrets/scratch.</li>
+</ul>
+<p><strong>The classic node_modules trap:</strong> you bind-mount the whole project (<code>.:/app</code>) and it <em>shadows</em> the <code>node_modules</code> that was installed inside the image at build time — the container now sees your host's (empty, or worse, macOS-compiled) modules and crashes on native deps like <code>esbuild</code>/<code>sharp</code>. Fix: an anonymous volume to "hole-punch" the mount:</p>
+<pre><code>services:
+  api:
+    volumes:
+      - .:/app              # source code from host (hot reload)
+      - /app/node_modules   # volume overrides that path → keeps image's Linux modules</code></pre>
+<p>Also worth mentioning: file-watching across the mount on Mac/Windows is slow (VM boundary) — polling flags or new virtiofs help; volume ownership/permissions when running as non-root user.</p>
+<p class="vn">Named volume cho data thật (DB); bind mount cho source code khi dev. Bẫy kinh điển: mount <code>.:/app</code> đè mất <code>node_modules</code> đã cài trong image (native module macOS ≠ Linux) → thêm volume ẩn <code>/app/node_modules</code> để che.</p>
+</div>
+</details>
+
+<details class="q">
+<summary>Running Node in containers in production: PID 1 signals, resource limits, and image security.<span class="badges"><span class="badge b-senior">Senior</span></span></summary>
+<div class="answer">
+<ul>
+<li><strong>PID 1 problem:</strong> the container's first process gets special kernel treatment — default signal handlers don't apply, and it must reap zombie children. <code>CMD npm start</code> makes <em>npm</em> PID 1, which historically didn't forward SIGTERM to node → your graceful shutdown never runs, K8s waits 30s then SIGKILLs. Fix: exec-form <code>CMD ["node","dist/main.js"]</code> or an init shim (<code>docker run --init</code> / <code>tini</code>).</li>
+<li><strong>Memory limits vs V8:</strong> the JS heap doesn't know about the cgroup limit. Old Node versions OOM-killed under container limits; modern Node (12+) reads cgroup memory, but for tight limits set <code>--max-old-space-size</code> explicitly (~75–80% of the limit, leaving room for buffers/stack). CPU limits: Node's <code>os.cpus()</code> can report the host's cores → thread pools/cluster oversize themselves; check cgroup-aware settings.</li>
+<li><strong>Image security:</strong> minimal base (<code>alpine</code>/<code>distroless</code> — fewer CVEs, no shell for attackers), non-root <code>USER</code>, pin image digests, scan in CI (Trivy/Docker Scout), no secrets in layers (<code>ARG</code> leaks into history — use BuildKit <code>--mount=type=secret</code>), read-only root filesystem where possible.</li>
+<li><strong>Health &amp; lifecycle:</strong> HEALTHCHECK (or K8s probes) hitting a real dependency-aware endpoint; one process per container — logs to stdout/stderr, not files.</li>
+</ul>
+<p class="vn">PID 1: đừng để npm làm PID 1 (nuốt SIGTERM) → CMD dạng exec hoặc tini. Giới hạn RAM: set <code>--max-old-space-size</code> ~75–80% limit. Security: base image tối giản, USER non-root, scan CI (Trivy), secret dùng BuildKit mount chứ đừng ARG. Log ra stdout.</p>
+</div>
+</details>
+
+<details class="q">
 <summary>Design a CI/CD pipeline for a shared library/monorepo (GitHub Actions). What did your "shared Actions toolkit" solve?<span class="badges"><span class="badge b-senior">Senior · CV</span></span></summary>
 <div class="answer">
 <p><strong>Pipeline stages:</strong> PR → lint + typecheck + unit tests (matrix per Node version) + build + visual regression (Storybook/Playwright), all with dependency caching (<code>actions/setup-node</code> cache, or Turborepo remote cache to only rebuild affected packages) → merge to main → <strong>Changesets</strong> opens/updates a release PR aggregating pending bumps → merging it publishes to the registry, tags, pushes Storybook image, and invalidates CDN.</p>
