@@ -187,7 +187,35 @@ console.log('5');
 </svg>
 <div class="cap">Event loop: microtask queue is fully drained before the next macrotask (and before paint).</div>
 </div>
-<p class="vn">JS chạy 1 luồng. Ưu tiên: code đồng bộ → <strong>toàn bộ</strong> microtask (Promise) → 1 macrotask (setTimeout) → lặp lại. Microtask chạy hết trước khi render.</p>
+<p><strong>Worked example of the full cycle (sync → drain microtasks → 1 macrotask → repeat):</strong></p>
+<pre><code>console.log('A');                                   // ① sync
+
+setTimeout(() =&gt; {                                  // macrotask #1
+  console.log('E');
+  Promise.resolve().then(() =&gt; console.log('F'));   // microtask queued INSIDE macrotask
+}, 0);
+
+setTimeout(() =&gt; console.log('G'), 0);              // macrotask #2
+
+Promise.resolve().then(() =&gt; {
+  console.log('C');
+  Promise.resolve().then(() =&gt; console.log('D'));   // microtask queued by a microtask
+});
+
+console.log('B');                                   // ① sync
+
+// Output: A B C D E F G</code></pre>
+<ol>
+<li><strong>Sync</strong> runs to completion → <code>A B</code> (timers/promises only get <em>registered</em>).</li>
+<li>Stack empty → <strong>drain ALL microtasks</strong>: <code>C</code>, which queues <code>D</code> — still drained in the same pass.</li>
+<li>🎨 Render opportunity — browser may paint here.</li>
+<li><strong>1 macrotask</strong>: timeout #1 → <code>E</code>; then microtasks drain again → <code>F</code>.</li>
+<li>Next macrotask: timeout #2 → <code>G</code>.</li>
+</ol>
+<p>Proof point: <code>F</code> beats <code>G</code> even though <code>G</code>'s timer was registered first — the microtask queue is flushed after <em>every</em> macrotask. Render-blocking contrast:</p>
+<pre><code>function microLoop(){ Promise.resolve().then(microLoop); } // page frozen — paint never gets a turn
+function macroLoop(){ setTimeout(macroLoop); }             // page fine — render runs between tasks</code></pre>
+<p class="vn">JS chạy 1 luồng. Ưu tiên: code đồng bộ → <strong>toàn bộ</strong> microtask (Promise) → 1 macrotask (setTimeout) → lặp lại. Microtask chạy hết trước khi render. Ví dụ trên: <code>F</code> chạy trước <code>G</code> dù timer của <code>G</code> đăng ký trước — vì sau mỗi macrotask, hàng đợi microtask được xả sạch.</p>
 </div>
 </details>
 
@@ -808,7 +836,65 @@ els.forEach((el, i) =&gt; { el.style.width = w[i] + 10 + 'px'; });</code></pre>
 </svg>
 <div class="cap">libuv event loop phases; nextTick + microtasks run between callbacks, not as a phase.</div>
 </div>
-<p class="vn">Node = V8 + libuv. 5 phase: timers → pending → poll → check(setImmediate) → close. <code>nextTick</code> → microtask chạy xen giữa mỗi callback. Network I/O dùng epoll (không phải thread pool); fs/crypto mới dùng thread pool (mặc định 4).</p>
+<p><strong>Side-by-side comparison — browser vs Node.js:</strong></p>
+<div class="fig">
+<svg viewBox="0 0 720 350" xmlns="http://www.w3.org/2000/svg">
+  <!-- Browser panel -->
+  <rect x="8" y="10" width="340" height="330" rx="12" fill="#f8faff" stroke="#c7cdf5" stroke-width="1.2"/>
+  <text class="tb" x="178" y="34" text-anchor="middle">Browser event loop</text>
+  <rect class="bx" x="68" y="48" width="220" height="44" rx="8"/>
+  <text class="tb" x="178" y="66" text-anchor="middle">run 1 macrotask</text>
+  <text class="ts" x="178" y="82" text-anchor="middle">setTimeout · click · message · fetch cb</text>
+  <rect class="bx3" x="68" y="116" width="220" height="40" rx="8"/>
+  <text class="tb" x="178" y="133" text-anchor="middle">drain ALL microtasks</text>
+  <text class="ts" x="178" y="148" text-anchor="middle">.then / await / MutationObserver</text>
+  <rect class="bx2" x="68" y="180" width="220" height="36" rx="8"/>
+  <text class="tb" x="178" y="196" text-anchor="middle">requestAnimationFrame</text>
+  <text class="ts" x="178" y="210" text-anchor="middle">before paint only</text>
+  <rect class="bx2" x="68" y="240" width="220" height="44" rx="8"/>
+  <text class="tb" x="178" y="258" text-anchor="middle">RENDER 🎨</text>
+  <text class="ts" x="178" y="274" text-anchor="middle">style → layout → paint (~60fps)</text>
+  <path class="ar" d="M178 94 V111"/><path class="ar" d="M178 158 V175"/><path class="ar" d="M178 218 V235"/>
+  <path class="ar" d="M64 262 Q30 262 30 165 Q30 70 63 70"/>
+  <text class="ts" x="178" y="310" text-anchor="middle">unique: rAF · requestIdleCallback</text>
+  <text class="ts" x="178" y="326" text-anchor="middle">microtask loop = frozen page (no paint)</text>
+  <!-- Node panel -->
+  <rect x="372" y="10" width="340" height="330" rx="12" fill="#fafff8" stroke="#a7f3d0" stroke-width="1.2"/>
+  <text class="tb" x="542" y="34" text-anchor="middle">Node.js event loop (libuv)</text>
+  <rect class="bx" x="400" y="48" width="140" height="34" rx="8"/><text class="tb" x="470" y="69" text-anchor="middle">timers</text>
+  <rect class="bx" x="400" y="94" width="140" height="34" rx="8"/><text class="tb" x="470" y="115" text-anchor="middle">pending cbs</text>
+  <rect class="bx" x="400" y="140" width="140" height="34" rx="8"/><text class="tb" x="470" y="155" text-anchor="middle">poll (I/O)</text><text class="ts" x="470" y="168" text-anchor="middle">may block/wait</text>
+  <rect class="bx" x="400" y="186" width="140" height="34" rx="8"/><text class="tb" x="470" y="201" text-anchor="middle">check</text><text class="ts" x="470" y="214" text-anchor="middle">setImmediate</text>
+  <rect class="bx" x="400" y="232" width="140" height="34" rx="8"/><text class="tb" x="470" y="253" text-anchor="middle">close cbs</text>
+  <path class="ar" d="M470 84 V90"/><path class="ar" d="M470 130 V136"/><path class="ar" d="M470 176 V182"/><path class="ar" d="M470 222 V228"/>
+  <path class="ar" d="M396 249 Q382 249 382 157 Q382 65 396 65"/>
+  <rect class="bx3" x="558" y="118" width="142" height="80" rx="8"/>
+  <text class="tb" x="629" y="140" text-anchor="middle">between every</text>
+  <text class="tb" x="629" y="155" text-anchor="middle">callback:</text>
+  <text class="ts" x="629" y="172" text-anchor="middle">1. process.nextTick</text>
+  <text class="ts" x="629" y="186" text-anchor="middle">2. Promise microtasks</text>
+  <path class="ar2" d="M556 158 Q548 158 543 158"/>
+  <text class="ts" x="542" y="296" text-anchor="middle">unique: setImmediate · process.nextTick</text>
+  <text class="ts" x="542" y="312" text-anchor="middle">NO render step · nextTick loop = starved I/O</text>
+</svg>
+<div class="cap">Same JS language rules, different hosts: the browser interleaves rendering; Node cycles through I/O phases.</div>
+</div>
+<table>
+<tr><th></th><th>Browser</th><th>Node.js</th></tr>
+<tr><td>Implemented by</td><td>Browser engine (per window/tab)</td><td>libuv</td></tr>
+<tr><td>Task sources</td><td>UI events, timers, network, postMessage</td><td>Phased: timers → pending → poll (I/O) → check → close</td></tr>
+<tr><td>Microtasks</td><td>Drained after each task, <em>before render</em></td><td>Drained after each callback — but <code>process.nextTick</code> queue runs first</td></tr>
+<tr><td>Rendering</td><td>Yes — rAF + style/layout/paint between tasks</td><td>None</td></tr>
+<tr><td>Unique APIs</td><td><code>requestAnimationFrame</code>, <code>requestIdleCallback</code></td><td><code>setImmediate</code>, <code>process.nextTick</code></td></tr>
+<tr><td>Starvation risk</td><td>Microtask loop blocks paint (frozen UI)</td><td>nextTick loop blocks I/O (starved server)</td></tr>
+<tr><td>Classic quirk</td><td><code>setTimeout(0)</code> clamped ~4ms when nested</td><td>Inside I/O callback, <code>setImmediate</code> always beats <code>setTimeout(0)</code></td></tr>
+</table>
+<pre><code>// Node ordering quirk — inside an I/O callback, check phase comes right after poll:
+fs.readFile(file, () =&gt; {
+  setTimeout(() =&gt; console.log('timeout'), 0);
+  setImmediate(() =&gt; console.log('immediate'));  // always first here
+});</code></pre>
+<p class="vn">Node = V8 + libuv. 5 phase: timers → pending → poll → check(setImmediate) → close. <code>nextTick</code> → microtask chạy xen giữa mỗi callback. Network I/O dùng epoll (không phải thread pool); fs/crypto mới dùng thread pool (mặc định 4). Khác browser: không có bước render/rAF; browser kẹt microtask thì đứng hình UI, Node kẹt nextTick thì nghẽn I/O.</p>
 </div>
 </details>
 
